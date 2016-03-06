@@ -1,6 +1,6 @@
 #TeraNUI
 
-NUI (Nice UI Framework) is a canvas based UI framework.
+TeraNUI (Terasology's New UI Framework) is a canvas based UI framework.
  
 Its major features are:
 
