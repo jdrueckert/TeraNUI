@@ -5,43 +5,55 @@
  * - View tasks for this project: $ gradlew tasks
  */
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
-
 // gradle wrapper version
 wrapper {
     gradleVersion '2.11'
 }
 
-// Declare remote repositories we're interested in - library files will be fetched from here
-repositories {
-    // Main Maven repo
-    mavenCentral()
+allprojects {
+    apply plugin: 'idea'
 
-    // MovingBlocks Artifactory instance for libs not readily available elsewhere plus our own libs
-    maven {
-        url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+    group = 'org.terasology'
+
+    // Declare remote repositories we're interested in - library files will be fetched from here
+    repositories {
+        // Main Maven repo
+        mavenCentral()
+
+        // MovingBlocks Artifactory instance for libs not readily available elsewhere plus our own libs
+        maven {
+            url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+        }
     }
 }
 
-// Primary dependencies definition
-dependencies {
-    compile group: 'org.terasology', name: 'gestalt-asset-core', version: '5.0.1'
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
 
-checkstyle {
-    ignoreFailures = true
-    configFile = new File(rootDir, 'config/checkstyle/checkstyle.xml')
-    configProperties.samedir = checkstyle.configFile.parentFile
-}
+    // Primary dependencies definition
+    dependencies {
+        compile group: 'org.terasology', name: 'gestalt-asset-core', version: '5.0.1'
+    }
 
-pmd {
-    ignoreFailures = true
-    ruleSetFiles = files("$rootDir/config/pmd/pmd.xml")
+    // Set the expected module Java level (can use a higher Java to run, but should not use features from a higher Java)
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    // TODO: add CI-specific settings on first release
+
+    checkstyle {
+        ignoreFailures = true
+        configFile = new File(rootDir, 'config/checkstyle/checkstyle.xml')
+        configProperties.samedir = checkstyle.configFile.parentFile
+    }
+
+    pmd {
+        ignoreFailures = true
+        ruleSetFiles = files("$rootDir/config/pmd/pmd.xml")
+    }
 }
 
 // Setup IntelliJ-IDEA
