@@ -1,0 +1,54 @@
+# Derived from the Terasology .gitignore file
+
+# Ignore general
+*~
+._*
+*.bak
+/.*
+
+# Except this stuff
+!.gitattributes
+!.gitignore
+!.github
+
+# Ignore Gradle temp files
+build/
+/gradle.properties
+
+# Ignore IntelliJ files
+*/out/
+/*.iml
+/*.ipr
+/*.iws
+/projectFilesBackup*
+/**/*.iml
+
+# Ignore Eclipse files
+.checkstyle
+.project
+.classpath
+.settings/
+bin/
+
+# Ignore Linux metadata
+*.directory
+
+# Ignore OSX metadata
+Icon
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.DocumentRevisions-V100
+.TemporaryItems
+.Trashes
+.dbfseventsd
+.fseventsd
+.VolumeIcon.icns
+
+# Ignore Windows metadata
+ehthumbs.db
+Thumbs.db
+
+
+# Local-only gradle settings
+local.properties
