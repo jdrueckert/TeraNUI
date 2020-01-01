@@ -17,7 +17,7 @@ package org.terasology.nui.skin;
 
 import com.google.gson.annotations.SerializedName;
 import org.terasology.nui.UITextureRegion;
-import org.terasology.nui.math.Border;
+import org.terasology.math.geom.Border;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.Color;
 import org.terasology.nui.HorizontalAlign;

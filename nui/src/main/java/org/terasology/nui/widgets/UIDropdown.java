@@ -18,7 +18,7 @@ package org.terasology.nui.widgets;
 import com.google.common.collect.Lists;
 import org.terasology.input.Keyboard;
 import org.terasology.nui.itemRendering.ToStringTextRenderer;
-import org.terasology.nui.math.Border;
+import org.terasology.math.geom.Border;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.asset.font.Font;

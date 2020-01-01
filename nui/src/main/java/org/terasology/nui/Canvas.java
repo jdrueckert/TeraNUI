@@ -19,7 +19,7 @@ package org.terasology.nui;
 * TODO: Should we keep the Mesh and Material methods here?
 */
 
-import org.terasology.nui.math.Border;
+import org.terasology.math.geom.Border;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.asset.font.Font;

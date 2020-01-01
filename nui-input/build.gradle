@@ -15,6 +15,8 @@ java {
 }
 
 repositories {
+    // TODO: Remove mavenLocal when TeraMath Border changes merged
+    mavenLocal()
     jcenter()
 
     // MovingBlocks Artifactory instance for libs not readily available elsewhere plus our own libs
@@ -27,7 +29,7 @@ dependencies {
     api group: 'org.terasology', name: 'gestalt-module', version: '5.1.5'
     api group: 'org.terasology', name: 'gestalt-asset-core', version: '5.1.5'
 
-    api group: 'org.terasology', name: 'TeraMath', version: '1.5.0'
+    api group: 'org.terasology', name: 'TeraMath', version: '1.5.1-SNAPSHOT'
 }
 
 publishing {
