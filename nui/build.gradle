@@ -1,0 +1,52 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+sourceSets {
+    main {
+        java
+    }
+}
+
+java {
+    withSourcesJar()
+    // TODO: Re-enable JavaDoc jar when JavaDoc errors fixed
+    //withJavadocJar()
+}
+
+repositories {
+    // TODO: Remove mavenLocal when TeraMath Border changes merged
+    mavenLocal()
+    jcenter()
+
+    // MovingBlocks Artifactory instance for libs not readily available elsewhere plus our own libs
+    maven {
+       url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+    }
+}
+
+dependencies {
+    api group: 'org.terasology', name: 'gestalt-module', version: '5.1.5'
+    api group: 'org.terasology', name: 'gestalt-asset-core', version: '5.1.5'
+    api group: 'org.terasology', name: 'TeraMath', version: '1.5.1-SNAPSHOT'
+    api group: 'org.abego.treelayout', name: 'org.abego.treelayout.core', version: '1.0.3'
+    api group: 'com.miglayout', name: 'miglayout-core', version: '5.0'
+
+    api project(':nui-input')
+
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
+    implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.terasology.nui'
+            artifactId = 'nui'
+            version = '0.1'
+
+            from components.java
+        }
+    }
+}

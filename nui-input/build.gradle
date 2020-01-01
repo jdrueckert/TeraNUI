@@ -1,16 +1,45 @@
-/*
- * This is a Gradle build file:
- * - Gradle Homepage: http://gradle.org/
- * - Gradle Documentation: http://gradle.org/documentation
- * - View tasks for this project: $ gradlew tasks
- */
-
-// Primary dependencies definition
-dependencies {
-    compile group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
-
-    compile group: 'org.terasology', name: 'TeraMath', version: '1.2.0'
+plugins {
+    id 'java-library'
+    id 'maven-publish'
 }
 
-// Library and distribution config
-description = 'A set of utilities for working with user input'
+sourceSets {
+    main {
+        java
+    }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+repositories {
+    // TODO: Remove mavenLocal when TeraMath Border changes merged
+    mavenLocal()
+    jcenter()
+
+    // MovingBlocks Artifactory instance for libs not readily available elsewhere plus our own libs
+    maven {
+       url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+    }
+}
+
+dependencies {
+    api group: 'org.terasology', name: 'gestalt-module', version: '5.1.5'
+    api group: 'org.terasology', name: 'gestalt-asset-core', version: '5.1.5'
+
+    api group: 'org.terasology', name: 'TeraMath', version: '1.5.1-SNAPSHOT'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.terasology.nui'
+            artifactId = 'nui-input'
+            version = '0.1'
+
+            from components.java
+        }
+    }
+}

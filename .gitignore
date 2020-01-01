@@ -1,45 +1,54 @@
+# Derived from the Terasology .gitignore file
+
 # Ignore general
-/.*
 *~
 ._*
 *.bak
+/.*
 
-# Don't ignore git-specific files
-!.gitignore
+# Except this stuff
 !.gitattributes
+!.gitignore
 !.github
 
-# Ignore Gradle
-/.gradle/
+# Ignore Gradle temp files
 build/
-/src/generated
+/gradle.properties
 
-# Ignore IntelliJ - could use "/**/*.iml" to catch all .iml files, but that requires a somewhat recent Git version
-/out/
-/nui-input/*.iml
+# Ignore IntelliJ files
+*/out/
 /*.iml
 /*.ipr
 /*.iws
+/projectFilesBackup*
+/**/*.iml
 
-# Ignore Eclipse
+# Ignore Eclipse files
 .checkstyle
 .project
 .classpath
 .settings/
 bin/
 
-# Ignore Linux
+# Ignore Linux metadata
 *.directory
 
-# Ignore OSX
+# Ignore OSX metadata
 Icon
-
-# Ignore Windows
-ehthumbs.db
-Thumbs.db
-
-# Ignore weird stuff that might be obsolete
 .DS_Store
 .DS_Store?
 .Spotlight-V100
+.DocumentRevisions-V100
+.TemporaryItems
 .Trashes
+.dbfseventsd
+.fseventsd
+.VolumeIcon.icns
+
+# Ignore Windows metadata
+ehthumbs.db
+Thumbs.db
+
+
+# Local-only gradle settings
+local.properties
