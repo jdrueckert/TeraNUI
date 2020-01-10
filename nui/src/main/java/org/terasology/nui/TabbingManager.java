@@ -16,6 +16,9 @@
 
 package org.terasology.nui;
 
+import org.terasology.input.Input;
+import org.terasology.input.Keyboard;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +34,9 @@ public class TabbingManager {
 
     public static WidgetWithOrder focusedWidget;
     public static boolean focusSetThrough;
+    public static Input tabBackInputModifier;
+    public static Input tabForwardInput;
+    public static Input activateInput;
 
     private static int currentNum;
     private static int maxNum;
@@ -38,6 +44,7 @@ public class TabbingManager {
     private static ArrayList<Integer> usedNums;
     private static ArrayList<WidgetWithOrder> widgetsList;
     private static boolean initialized = false;
+    private static FocusManager focusManager;
 
     /**
      * Resets TabbingManager values.
@@ -46,6 +53,8 @@ public class TabbingManager {
         widgetIsOpen = false;
         focusedWidget = null;
         focusSetThrough = false;
+        tabBackInputModifier = Keyboard.Key.LEFT_SHIFT;
+        tabForwardInput = Keyboard.Key.TAB;
         currentNum = 0;
         maxNum = 0;
         nextNum = 0;
@@ -91,6 +100,7 @@ public class TabbingManager {
         if (focusedWidget != null) {
             focusSetThrough = true;
             focusedWidget = null;
+            focusManager.setFocus(null);
         }
     }
 
@@ -154,5 +164,11 @@ public class TabbingManager {
     }
     public static void setWidgetIsOpen(boolean open) {
         widgetIsOpen = open;
+    }
+    public static void setFocusManager(FocusManager manager) {
+        focusManager = manager;
+    }
+    public static FocusManager getFocusManager() {
+        return focusManager;
     }
 }

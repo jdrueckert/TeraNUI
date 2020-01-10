@@ -18,11 +18,15 @@ package org.terasology.nui;
 import com.google.common.collect.Lists;
 import org.terasology.input.BindButtonEvent;
 import org.terasology.input.ButtonState;
+import org.terasology.input.Input;
+import org.terasology.input.InputType;
 import org.terasology.input.MouseInput;
 import org.terasology.input.events.MouseButtonEvent;
+import org.terasology.input.events.MouseWheelEvent;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.databinding.ReadOnlyBinding;
+import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.skin.UISkin;
 import org.terasology.nui.widgets.UIDropdown;
 import org.terasology.nui.widgets.UILabel;
@@ -290,23 +294,42 @@ public abstract class AbstractWidget implements UIWidget {
     }
 
     @Override
-    public void onBindEvent(BindButtonEvent event) {
-        if (event.getState().equals(ButtonState.DOWN)/* && !SortOrderSystem.containsConsole()*/) {
+    public void onMouseButtonEvent(MouseButtonEvent event) {
+        onTabbingInput(event.getButton(), event.getState());
+    }
 
-            if (event.getId().equals("engine:tabbingModifier")) {
+    @Override
+    public void onMouseWheelEvent(MouseWheelEvent event) {
+        // TODO: Implement this
+        onTabbingInput(InputType.MOUSE_WHEEL.getInput(event.getWheelTurns()), ButtonState.DOWN);
+    }
+
+    @Override
+    public boolean onKeyEvent(NUIKeyEvent event) {
+        return onTabbingInput(event.getKey(), event.getState());
+    }
+
+    @Override
+    public void onBindEvent(BindButtonEvent event) {
+        // Placeholder for compatibility...
+    }
+
+    private boolean onTabbingInput(Input input, ButtonState state) {
+        if (state.equals(ButtonState.DOWN)/* && !SortOrderSystem.containsConsole()*/) {
+            if (input.equals(TabbingManager.tabBackInputModifier)) {
                 shiftPressed = true;
             }
 
-            if (event.getId().equals("engine:tabbingUI")) {
+            if (input.equals(TabbingManager.tabForwardInput)) {
                 if (!TabbingManager.isInitialized()) {
                     TabbingManager.init();
                 }
-                /*if (TabbingManager.getOpenScreen().getManager().getFocus() == null) {
+                if (TabbingManager.getFocusManager().getFocus() == null) {
                     if (TabbingManager.getWidgetsList().size() > 0) {
                         TabbingManager.resetCurrentNum();
                         TabbingManager.focusedWidget = TabbingManager.getWidgetsList().get(0);
                     }
-                }*/
+                }
                 TabbingManager.focusSetThrough = true;
                 TabbingManager.changeCurrentNum(!shiftPressed);
 
@@ -317,7 +340,7 @@ public abstract class AbstractWidget implements UIWidget {
                         } else {
                             widget.onGainFocus();
                             TabbingManager.focusedWidget = widget;
-                            //TabbingManager.getOpenScreen().getManager().setFocus(widget);
+                            TabbingManager.getFocusManager().setFocus(widget);
                         }
                     } else {
                         widget.onLoseFocus();
@@ -328,8 +351,8 @@ public abstract class AbstractWidget implements UIWidget {
                     }
                 }
 
-                event.prepare("engine:tabbingUI", ButtonState.UP, event.getDelta());
-            } else if (event.getId().equals("engine:activate")) {
+                return true;
+            } else if (input.equals(TabbingManager.activateInput)) {
                 if (TabbingManager.focusedWidget instanceof UIDropdown) {
                     UIDropdown dropdown = ((UIDropdown) TabbingManager.focusedWidget);
                     if (dropdown.isOpened()) {
@@ -339,15 +362,18 @@ public abstract class AbstractWidget implements UIWidget {
                     ((ActivatableWidget) TabbingManager.focusedWidget).activateWidget();
                 }
 
-                event.prepare("engine:activate", ButtonState.UP, event.getDelta());
+                return false;
             }
         }
-        if (event.getState().equals(ButtonState.UP)/* && !SortOrderSystem.containsConsole()*/) {
 
-            if (event.getId().equals("engine:tabbingModifier")) {
+        if (state.equals(ButtonState.UP)/* && !SortOrderSystem.containsConsole()*/) {
+            if (input.equals(TabbingManager.tabBackInputModifier)) {
                 shiftPressed = false;
+                return true;
             }
         }
+
+        return false;
     }
 
     public static boolean getShiftPressed() {

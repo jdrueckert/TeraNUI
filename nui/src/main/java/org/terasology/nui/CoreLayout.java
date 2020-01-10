@@ -41,7 +41,7 @@ public abstract class CoreLayout<T extends LayoutHint> extends AbstractWidget im
 
     @Override
     public boolean onKeyEvent(NUIKeyEvent event) {
-        return false;
+        return super.onKeyEvent(event);
     }
 
     @Override

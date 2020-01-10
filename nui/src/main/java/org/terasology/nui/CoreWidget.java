@@ -50,7 +50,7 @@ public abstract class CoreWidget extends AbstractWidget {
 
     @Override
     public boolean onKeyEvent(NUIKeyEvent event) {
-        return false;
+        return super.onKeyEvent(event);
     }
 
     @Override
