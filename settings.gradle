@@ -1,2 +1,2 @@
 rootProject.name = 'TeraNUI'
-include 'nui-input', 'nui'
+include 'nui-input', 'nui', 'nui-reflect'

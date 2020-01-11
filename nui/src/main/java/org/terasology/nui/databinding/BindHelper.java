@@ -17,7 +17,7 @@ package org.terasology.nui.databinding;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.nui.util.ReflectionUtil;
+import org.terasology.reflection.ReflectionUtil;
 
 import java.lang.reflect.Method;
 import java.util.List;

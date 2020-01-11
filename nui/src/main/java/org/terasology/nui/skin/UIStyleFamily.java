@@ -15,17 +15,15 @@
  */
 package org.terasology.nui.skin;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import org.terasology.nui.UIWidget;
-import org.terasology.nui.util.ReflectionUtil;
+import org.terasology.nui.internal.reflection.UIReflectionUtil;
+import org.terasology.reflection.ReflectionUtil;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -104,7 +102,7 @@ public class UIStyleFamily {
     private List<Class<? extends UIWidget>> getInheritanceTree(Class<? extends UIWidget> element) {
         List<Class<? extends UIWidget>> classes = cachedInheritanceTree.get(element);
         if (classes == null) {
-            classes = ReflectionUtil.getInheritanceTree(element, UIWidget.class);
+            classes = UIReflectionUtil.getInheritanceTree(element, UIWidget.class);
             cachedInheritanceTree.put(element, classes);
         }
         return classes;

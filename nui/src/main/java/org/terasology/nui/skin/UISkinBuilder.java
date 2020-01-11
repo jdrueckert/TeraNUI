@@ -27,7 +27,8 @@ import org.terasology.nui.HorizontalAlign;
 import org.terasology.nui.ScaleMode;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.VerticalAlign;
-import org.terasology.nui.util.ReflectionUtil;
+import org.terasology.nui.internal.reflection.UIReflectionUtil;
+import org.terasology.reflection.ReflectionUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -244,7 +245,7 @@ public class UISkinBuilder {
             UIStyle elementStyle = new UIStyle(baseSkin.getStyleFor(family, styleKey.element, styleKey.part, styleKey.mode));
             baseStyles.get("").applyTo(elementStyle);
             baseStyles.get(family).applyTo(elementStyle);
-            List<Class<? extends UIWidget>> inheritanceTree = ReflectionUtil.getInheritanceTree(styleKey.element, UIWidget.class);
+            List<Class<? extends UIWidget>> inheritanceTree = UIReflectionUtil.getInheritanceTree(styleKey.element, UIWidget.class);
             applyStylesForInheritanceTree(inheritanceTree, "", "", elementStyle, styleLookup, baseStyleLookup);
 
             if (!styleKey.part.isEmpty()) {
@@ -277,7 +278,7 @@ public class UISkinBuilder {
         Map<StyleKey, UIStyleFragment> baseStyleLookup = (family.isEmpty()) ? Maps.<StyleKey, UIStyleFragment>newHashMap() : elementStyles.row("");
         for (StyleKey styleKey : Sets.union(styleLookup.keySet(), baseStyleKeys)) {
             UIStyle elementStyle = new UIStyle(baseStyle);
-            List<Class<? extends UIWidget>> inheritanceTree = ReflectionUtil.getInheritanceTree(styleKey.element, UIWidget.class);
+            List<Class<? extends UIWidget>> inheritanceTree = UIReflectionUtil.getInheritanceTree(styleKey.element, UIWidget.class);
             applyStylesForInheritanceTree(inheritanceTree, "", "", elementStyle, styleLookup, baseStyleLookup);
 
             if (!styleKey.part.isEmpty()) {
