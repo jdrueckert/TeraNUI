@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-/*
- * TODO: Should gestalt-module be included just for the API annotation?
- */
 
-/*
 @API package org.terasology.input;
 
 import org.terasology.module.sandbox.API;
-*/

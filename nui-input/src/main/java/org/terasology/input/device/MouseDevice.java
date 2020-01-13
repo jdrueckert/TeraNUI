@@ -17,16 +17,12 @@ package org.terasology.input.device;
 
 import java.util.Queue;
 
-/*
- * TODO: Should gestalt-module be included just for the API annotation?
- */
-
-//import org.terasology.module.sandbox.API;
+import org.terasology.module.sandbox.API;
 import org.terasology.math.geom.Vector2i;
 
 /**
  */
-//@API
+@API
 public interface MouseDevice extends InputDevice {
 
     @Override

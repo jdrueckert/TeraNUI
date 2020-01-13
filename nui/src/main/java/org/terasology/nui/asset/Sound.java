@@ -1,11 +1,11 @@
 /*
- * Copyright 2013 MovingBlocks
+ * Copyright 2020 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.input.device;
 
-import org.terasology.module.sandbox.API;
+// TODO: Should this be included with NUI (it is only used for UIButton)?
 
-import java.util.Queue;
+package org.terasology.nui.asset;
 
-@API
-@FunctionalInterface
-public interface InputDevice {
-
-    /**
-     * @return A queue of all input actions that have occurred over the last update for this device
-     */
-    Queue<?> getInputQueue();
+public interface Sound {
+    void play(float volume);
 }

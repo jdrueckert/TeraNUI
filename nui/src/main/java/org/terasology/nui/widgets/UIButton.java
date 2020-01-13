@@ -17,6 +17,7 @@ package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
 import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.asset.Sound;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.ActivatableWidget;
@@ -34,10 +35,12 @@ import org.terasology.nui.events.NUIMouseReleaseEvent;
 import java.util.List;
 
 /**
- * A widget displaying a clickable button, containing text and an optional image
+ * A widget displaying a clickable button, containing text and an optional image. The button can make a sound when
+ * clicked, which is set by-default to {@link UIButton#DEFAULT_CLICK_SOUND}.
  */
 public class UIButton extends ActivatableWidget {
     public static final String DOWN_MODE = "down";
+    public static Sound DEFAULT_CLICK_SOUND = null;
 
     /**
      * The {@link Binding} containing the {@link UITextureRegion} corresponding to the image shown on this button
@@ -50,6 +53,14 @@ public class UIButton extends ActivatableWidget {
      */
     @LayoutConfig
     private Binding<String> text = new DefaultBinding<>("");
+
+    // TODO: Should clickSound be included here?
+
+    /**
+     * The {@code Binding} containing the {@link Sound} to be played when this button is clicked
+     */
+    @LayoutConfig
+    private Binding<Sound> clickSound = new DefaultBinding<>(DEFAULT_CLICK_SOUND);
 
     /**
      * The {@code Binding} containing the float representing the volume of the click sound, 1.0 by default
@@ -186,6 +197,9 @@ public class UIButton extends ActivatableWidget {
 
     @Override
     protected void activateWidget() {
+        if (getClickSound() != null) {
+            getClickSound().play(getClickVolume());
+        }
         super.activateWidget();
     }
 
@@ -241,6 +255,33 @@ public class UIButton extends ActivatableWidget {
      */
     public UITextureRegion getImage() {
         return image.get();
+    }
+
+    /**
+     * Binds the click sound played when this {@code UIButton} is clicked.
+     *
+     * @param binding The {@code Binding} containing the {@code Sound} corresponding to the click sound
+     */
+    public void bindClickSound(Binding<Sound> binding) {
+        clickSound = binding;
+    }
+
+    /**
+     * Retrieves the click sound played when this {@code UIButton} is clicked.
+     *
+     * @return A {@code StaticSound} corresponding to the click sound
+     */
+    public Sound getClickSound() {
+        return clickSound.get();
+    }
+
+    /**
+     * Sets the click sound played when this {@code UIButton} is clicked.
+     *
+     * @param val A {@code StaticSound} corresponding to the click sound
+     */
+    public void setClickSound(Sound val) {
+        clickSound.set(val);
     }
 
     /**
