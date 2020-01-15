@@ -17,7 +17,6 @@ package org.terasology.nui.widgets;
 
 import org.terasology.input.Keyboard;
 import org.terasology.input.MouseInput;
-import org.terasology.input.events.MouseWheelEvent;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector2i;
@@ -34,6 +33,7 @@ import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 
 import java.util.function.Function;
 
@@ -207,7 +207,7 @@ public class UISlider extends ActivatableWidget {
     }
 
     @Override
-    public void onMouseWheelEvent(MouseWheelEvent event) {
+    public void onMouseWheelEvent(NUIMouseWheelEvent event) {
         event.consume();
     }
 

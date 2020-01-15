@@ -27,6 +27,7 @@ import org.terasology.input.device.MouseDevice;
 public abstract class NUIInputEvent {
     private MouseDevice mouse;
     private KeyboardDevice keyboard;
+    private boolean consumed;
 
     public NUIInputEvent(MouseDevice mouse, KeyboardDevice keyboard) {
         this.mouse = mouse;
@@ -39,5 +40,13 @@ public abstract class NUIInputEvent {
 
     public KeyboardDevice getKeyboard() {
         return keyboard;
+    }
+
+    public boolean isConsumed() {
+        return consumed;
+    }
+
+    public void consume() {
+        consumed = true;
     }
 }

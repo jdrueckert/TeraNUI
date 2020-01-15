@@ -15,10 +15,10 @@
  */
 package org.terasology.nui;
 
-import org.terasology.input.BindButtonEvent;
-import org.terasology.input.events.MouseButtonEvent;
-import org.terasology.input.events.MouseWheelEvent;
+import org.terasology.nui.events.NUIBindButtonEvent;
 import org.terasology.nui.events.NUIKeyEvent;
+import org.terasology.nui.events.NUIMouseButtonEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 
 /**
  */
@@ -32,11 +32,11 @@ public abstract class CoreLayout<T extends LayoutHint> extends AbstractWidget im
     }
 
     @Override
-    public void onMouseButtonEvent(MouseButtonEvent event) {
+    public void onMouseButtonEvent(NUIMouseButtonEvent event) {
     }
 
     @Override
-    public void onMouseWheelEvent(MouseWheelEvent event) {
+    public void onMouseWheelEvent(NUIMouseWheelEvent event) {
     }
 
     @Override
@@ -45,6 +45,6 @@ public abstract class CoreLayout<T extends LayoutHint> extends AbstractWidget im
     }
 
     @Override
-    public void onBindEvent(BindButtonEvent event) {
+    public void onBindEvent(NUIBindButtonEvent event) {
     }
 }

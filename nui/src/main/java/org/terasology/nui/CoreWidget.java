@@ -15,11 +15,11 @@
  */
 package org.terasology.nui;
 
-import org.terasology.input.BindButtonEvent;
-import org.terasology.input.events.MouseButtonEvent;
-import org.terasology.input.events.MouseWheelEvent;
+import org.terasology.nui.events.NUIBindButtonEvent;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.events.NUIKeyEvent;
+import org.terasology.nui.events.NUIMouseButtonEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,11 +41,11 @@ public abstract class CoreWidget extends AbstractWidget {
     }
 
     @Override
-    public void onMouseButtonEvent(MouseButtonEvent event) {
+    public void onMouseButtonEvent(NUIMouseButtonEvent event) {
     }
 
     @Override
-    public void onMouseWheelEvent(MouseWheelEvent event) {
+    public void onMouseWheelEvent(NUIMouseWheelEvent event) {
     }
 
     @Override
@@ -54,7 +54,7 @@ public abstract class CoreWidget extends AbstractWidget {
     }
 
     @Override
-    public void onBindEvent(BindButtonEvent event) {
+    public void onBindEvent(NUIBindButtonEvent event) {
     }
 
     @Override

@@ -17,8 +17,6 @@ package org.terasology.nui.layouts;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
-import org.terasology.input.events.MouseButtonEvent;
-import org.terasology.input.events.MouseWheelEvent;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector2i;
@@ -28,6 +26,8 @@ import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.LayoutHint;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.events.NUIKeyEvent;
+import org.terasology.nui.events.NUIMouseButtonEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -283,11 +283,11 @@ public class MultiRowLayout extends CoreLayout<LayoutHint> {
     }
 
     @Override
-    public void onMouseButtonEvent(MouseButtonEvent event) {
+    public void onMouseButtonEvent(NUIMouseButtonEvent event) {
     }
 
     @Override
-    public void onMouseWheelEvent(MouseWheelEvent event) {
+    public void onMouseWheelEvent(NUIMouseWheelEvent event) {
     }
 
     @Override

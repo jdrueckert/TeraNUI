@@ -15,12 +15,13 @@
  */
 package org.terasology.nui;
 
-import org.terasology.input.BindButtonEvent;
-import org.terasology.input.events.MouseButtonEvent;
-import org.terasology.input.events.MouseWheelEvent;
+import org.terasology.nui.events.NUIBindButtonEvent;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.events.NUIKeyEvent;
+import org.terasology.nui.events.NUIMouseButtonEvent;
+import org.terasology.nui.events.NUIMouseClickEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 import org.terasology.nui.skin.UISkin;
 
 import java.util.Collection;
@@ -89,9 +90,9 @@ public interface UIWidget extends Iterable<UIWidget> {
 
     void onLoseFocus();
 
-    void onMouseButtonEvent(MouseButtonEvent event);
+    void onMouseButtonEvent(NUIMouseButtonEvent event);
 
-    void onMouseWheelEvent(MouseWheelEvent event);
+    void onMouseWheelEvent(NUIMouseWheelEvent event);
 
 
     /**
@@ -100,7 +101,11 @@ public interface UIWidget extends Iterable<UIWidget> {
      */
     boolean onKeyEvent(NUIKeyEvent event);
 
-    void onBindEvent(BindButtonEvent event);
+    /**
+     * Executed when a registered input-bind is activated (e.g. when a key or mouse button is pressed)
+     * @param event An event triggered by the bind activation (you can find which bind was activated using {@link NUIBindButtonEvent#getId()})
+     */
+    void onBindEvent(NUIBindButtonEvent event);
 
     /**
      * Returns the preferred content size of this widget.

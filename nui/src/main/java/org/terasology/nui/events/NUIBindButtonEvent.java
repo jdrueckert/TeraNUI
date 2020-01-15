@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 MovingBlocks
+ * Copyright 2020 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,32 @@
  * limitations under the License.
  */
 
-package org.terasology.input;
+package org.terasology.nui.events;
 
-import org.terasology.engine.SimpleUri;
-import org.terasology.input.events.ButtonEvent;
+import org.terasology.assets.ResourceUrn;
+import org.terasology.input.ButtonState;
+import org.terasology.input.device.KeyboardDevice;
+import org.terasology.input.device.MouseDevice;
 
 /**
  */
-public class BindButtonEvent extends ButtonEvent {
+public class NUIBindButtonEvent extends NUIInputEvent {
 
-    private String id;
+    private ResourceUrn id;
     private ButtonState state;
 
-    public BindButtonEvent() {
-        super(0);
-    }
+    public NUIBindButtonEvent(MouseDevice mouseDevice, KeyboardDevice keyboardDevice, ResourceUrn buttonId, ButtonState newState) {
+        super(mouseDevice, keyboardDevice);
 
-    public void prepare(SimpleUri buttonId, ButtonState newState, float delta) {
-        reset(delta);
-        this.id = buttonId.toString();
+        this.id = buttonId;
         this.state = newState;
     }
 
-    public String getEventId() {
+    public ResourceUrn getId() {
         return id;
     }
 
-    public SimpleUri getId() {
-        return new SimpleUri(id);
-    }
-
-    @Override
     public ButtonState getState() {
         return state;
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 MovingBlocks
+ * Copyright 2020 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.input.events;
-
+package org.terasology.nui.events;
 
 import org.terasology.input.ButtonState;
 import org.terasology.input.MouseInput;
 import org.terasology.math.geom.Vector2i;
 
-public class MouseButtonEvent extends ButtonEvent {
-
+public class NUIMouseButtonEvent extends NUIMouseEvent {
     private MouseInput button;
     private ButtonState state;
     private Vector2i mousePosition = new Vector2i();
 
-    public MouseButtonEvent(MouseInput button, ButtonState state, float delta) {
-        super(delta);
+    public NUIMouseButtonEvent(MouseInput button, ButtonState state, Vector2i mousePosition) {
+        super(null, null, mousePosition);
         this.state = state;
         this.button = button;
     }
 
-    @Override
     public ButtonState getState() {
         return state;
     }
@@ -59,9 +56,5 @@ public class MouseButtonEvent extends ButtonEvent {
 
     public void setMousePosition(Vector2i mousePosition) {
         this.mousePosition.set(mousePosition);
-    }
-
-    public void reset() {
-        reset(0f);
     }
 }

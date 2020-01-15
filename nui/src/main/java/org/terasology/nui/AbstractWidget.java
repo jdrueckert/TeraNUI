@@ -16,21 +16,21 @@
 package org.terasology.nui;
 
 import com.google.common.collect.Lists;
-import org.terasology.input.BindButtonEvent;
+import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.events.NUIBindButtonEvent;
 import org.terasology.input.ButtonState;
 import org.terasology.input.Input;
 import org.terasology.input.InputType;
 import org.terasology.input.MouseInput;
-import org.terasology.input.events.MouseButtonEvent;
-import org.terasology.input.events.MouseWheelEvent;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.databinding.ReadOnlyBinding;
 import org.terasology.nui.events.NUIKeyEvent;
+import org.terasology.nui.events.NUIMouseButtonEvent;
+import org.terasology.nui.events.NUIMouseWheelEvent;
 import org.terasology.nui.skin.UISkin;
 import org.terasology.nui.widgets.UIDropdown;
 import org.terasology.nui.widgets.UILabel;
-import org.terasology.nui.widgets.UIList;
 import org.terasology.nui.widgets.UIRadialSection;
 
 import java.util.Collection;
@@ -205,7 +205,7 @@ public abstract class AbstractWidget implements UIWidget {
     @Override
     public void onGainFocus() {
         focused = true;
-        this.onMouseButtonEvent(new MouseButtonEvent(MouseInput.MOUSE_LEFT, ButtonState.UP, 0));
+        this.onMouseButtonEvent(new NUIMouseButtonEvent(MouseInput.MOUSE_LEFT, ButtonState.UP, new Vector2i()));
     }
 
     @Override
@@ -294,12 +294,12 @@ public abstract class AbstractWidget implements UIWidget {
     }
 
     @Override
-    public void onMouseButtonEvent(MouseButtonEvent event) {
+    public void onMouseButtonEvent(NUIMouseButtonEvent event) {
         onTabbingInput(event.getButton(), event.getState());
     }
 
     @Override
-    public void onMouseWheelEvent(MouseWheelEvent event) {
+    public void onMouseWheelEvent(NUIMouseWheelEvent event) {
         // TODO: Implement this
         onTabbingInput(InputType.MOUSE_WHEEL.getInput(event.getWheelTurns()), ButtonState.DOWN);
     }
@@ -310,7 +310,7 @@ public abstract class AbstractWidget implements UIWidget {
     }
 
     @Override
-    public void onBindEvent(BindButtonEvent event) {
+    public void onBindEvent(NUIBindButtonEvent event) {
         // Placeholder for compatibility...
     }
 
@@ -362,7 +362,7 @@ public abstract class AbstractWidget implements UIWidget {
                     ((ActivatableWidget) TabbingManager.focusedWidget).activateWidget();
                 }
 
-                return false;
+                return true;
             }
         }
 
