@@ -16,10 +16,12 @@
 
 package org.terasology.nui.asset.font;
 
+import org.terasology.module.sandbox.API;
 import org.terasology.nui.UITextureRegion;
 
 /**
  */
+@API
 public class FontCharacter {
     private float x;
     private float y;

@@ -18,6 +18,9 @@
 
 package org.terasology.nui.asset;
 
+import org.terasology.module.sandbox.API;
+
+@API
 public interface Sound {
     void play(float volume);
 }
