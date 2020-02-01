@@ -34,8 +34,8 @@ public class TabbingManager {
 
     public static WidgetWithOrder focusedWidget;
     public static boolean focusSetThrough;
-    public static Input tabBackInputModifier;
-    public static Input tabForwardInput;
+    public static Input tabBackInputModifier = Keyboard.Key.LEFT_SHIFT;
+    public static Input tabForwardInput = Keyboard.Key.TAB;
     public static Input activateInput;
 
     private static int currentNum;
@@ -53,8 +53,6 @@ public class TabbingManager {
         widgetIsOpen = false;
         focusedWidget = null;
         focusSetThrough = false;
-        tabBackInputModifier = Keyboard.Key.LEFT_SHIFT;
-        tabForwardInput = Keyboard.Key.TAB;
         currentNum = 0;
         maxNum = 0;
         nextNum = 0;
