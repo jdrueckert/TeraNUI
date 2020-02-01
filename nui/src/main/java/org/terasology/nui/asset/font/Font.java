@@ -17,7 +17,7 @@
 package org.terasology.nui.asset.font;
 
 import org.terasology.math.geom.Vector2i;
-import org.terasology.module.sandbox.API;
+import org.terasology.gestalt.module.sandbox.API;
 
 import java.util.List;
 

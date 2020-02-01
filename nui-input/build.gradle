@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-    api group: 'org.terasology', name: 'gestalt-module', version: '5.1.5'
-    api group: 'org.terasology', name: 'gestalt-asset-core', version: '5.1.5'
+    api group: 'org.terasology.gestalt', name: 'gestalt-module', version: '7.0.3'
+    api group: 'org.terasology.gestalt', name: 'gestalt-asset-core', version: '7.0.3'
 
     api group: 'org.terasology', name: 'TeraMath', version: '1.5.1-SNAPSHOT'
 }
