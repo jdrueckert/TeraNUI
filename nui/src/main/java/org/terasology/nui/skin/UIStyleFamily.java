@@ -18,8 +18,7 @@ package org.terasology.nui.skin;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import org.terasology.nui.UIWidget;
-import org.terasology.nui.internal.reflection.UIReflectionUtil;
-import org.terasology.reflection.ReflectionUtil;
+import org.terasology.nui.reflection.UIReflectionUtil;
 
 import java.util.Collections;
 import java.util.List;

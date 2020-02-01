@@ -27,8 +27,7 @@ import org.terasology.nui.HorizontalAlign;
 import org.terasology.nui.ScaleMode;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.VerticalAlign;
-import org.terasology.nui.internal.reflection.UIReflectionUtil;
-import org.terasology.reflection.ReflectionUtil;
+import org.terasology.nui.reflection.UIReflectionUtil;
 
 import java.util.List;
 import java.util.Map;

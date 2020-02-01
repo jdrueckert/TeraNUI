@@ -1,4 +1,4 @@
-package org.terasology.nui.internal.reflection;
+package org.terasology.nui.reflection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
