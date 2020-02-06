@@ -16,7 +16,7 @@
 package org.terasology.nui.backends.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import org.terasology.assets.AssetData;
+import org.terasology.gestalt.assets.AssetData;
 import org.terasology.math.geom.Rect2f;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector2i;
