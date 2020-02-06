@@ -17,12 +17,13 @@ package org.terasology.nui.backends.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import org.terasology.assets.AssetData;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.asset.font.Font;
 
 import java.util.List;
 
-public class LibGDXFont implements Font {
+public class LibGDXFont implements Font, AssetData {
     private BitmapFont bitmapFont;
     private GlyphLayout glyphLayout;
 

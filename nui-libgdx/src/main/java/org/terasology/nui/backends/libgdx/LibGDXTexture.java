@@ -16,12 +16,13 @@
 package org.terasology.nui.backends.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import org.terasology.assets.AssetData;
 import org.terasology.math.geom.Rect2f;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.UITextureRegion;
 
-public class LibGDXTexture implements UITextureRegion {
+public class LibGDXTexture implements UITextureRegion, AssetData {
     private final TextureRegion texture;
 
     public LibGDXTexture(TextureRegion texture) {
