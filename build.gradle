@@ -2,6 +2,10 @@ plugins {
     id 'idea'
 }
 
+ext {
+    nuiVersion = "0.1"
+}
+
 dependencies {
 }
 

@@ -17,6 +17,7 @@ package org.terasology.nui.backends.libgdx;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import org.terasology.input.ButtonState;
 import org.terasology.input.InputType;
@@ -33,12 +34,28 @@ public class NUIInputProcessor implements InputProcessor {
     private Queue<MouseAction> mouseActionQueue = new LinkedList<>();
     private static NUIInputProcessor instance = new NUIInputProcessor();
 
+    public static boolean CONSUME_INPUT = false;
+
     public NUIInputProcessor() {
     }
 
     public static void init() {
-        if (Gdx.input.getInputProcessor() != instance) {
-            Gdx.input.setInputProcessor(instance);
+        InputMultiplexer inputMultiplexer;
+
+        if (Gdx.input.getInputProcessor() instanceof InputMultiplexer) {
+            inputMultiplexer = (InputMultiplexer)Gdx.input.getInputProcessor();
+        } else {
+            InputProcessor currentProcessor = Gdx.input.getInputProcessor();
+            if (currentProcessor == null) {
+                inputMultiplexer = new InputMultiplexer();
+            } else {
+                inputMultiplexer = new InputMultiplexer(currentProcessor);
+            }
+            Gdx.input.setInputProcessor(inputMultiplexer);
+        }
+
+        if (!inputMultiplexer.getProcessors().contains(instance, true)) {
+            inputMultiplexer.addProcessor(0, instance);
         }
     }
 
@@ -74,7 +91,7 @@ public class NUIInputProcessor implements InputProcessor {
         }
 
         keyboardActionQueue.add(new KeyboardAction(key, ButtonState.DOWN, keyChar));
-        return false;
+        return CONSUME_INPUT;
     }
 
     @Override
@@ -93,7 +110,7 @@ public class NUIInputProcessor implements InputProcessor {
         }
 
         keyboardActionQueue.add(new KeyboardAction(key, ButtonState.UP, keyChar));
-        return false;
+        return CONSUME_INPUT;
     }
 
     @Override
@@ -104,19 +121,19 @@ public class NUIInputProcessor implements InputProcessor {
 
         keyboardActionQueue.add(new KeyboardAction(lastKey, ButtonState.DOWN, character));
         keyboardActionQueue.add(new KeyboardAction(lastKey, ButtonState.UP, character));
-        return false;
+        return CONSUME_INPUT;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         mouseActionQueue.add(new MouseAction(GDXInputUtil.GDXToTerasologyMouseButton(button), ButtonState.DOWN, GDXInputUtil.GDXToNUIMousePosition(screenX, screenY)));
-        return false;
+        return CONSUME_INPUT;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         mouseActionQueue.add(new MouseAction(GDXInputUtil.GDXToTerasologyMouseButton(button), ButtonState.UP, GDXInputUtil.GDXToNUIMousePosition(screenX, screenY)));
-        return false;
+        return CONSUME_INPUT;
     }
 
     @Override
@@ -133,6 +150,6 @@ public class NUIInputProcessor implements InputProcessor {
     public boolean scrolled(int amount) {
         amount = (amount < 0 ? 1 : -1);
         mouseActionQueue.add(new MouseAction(InputType.MOUSE_WHEEL.getInput(amount), amount, GDXInputUtil.GDXToNUIMousePosition(Gdx.input.getX(), Gdx.input.getY())));
-        return false;
+        return CONSUME_INPUT;
     }
 }

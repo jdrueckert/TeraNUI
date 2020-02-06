@@ -44,18 +44,39 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
     private int cropCount = 0;
     private int screenWidth;
     private int screenHeight;
+    private boolean controlSpriteBatch;
+    private boolean controlShapeRenderer;
+    private Matrix4 lastMatrix;
 
     // NOTE: These constants were taken from Terasology's FontMeshBuilder class
     private static final int SHADOW_HORIZONTAL_OFFSET = 1;
     private static final int SHADOW_VERTICAL_OFFSET = 1;
 
     public LibGDXCanvasRenderer() {
-        this(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new SpriteBatch(), new ShapeRenderer(), true, true);
+    }
+
+    public LibGDXCanvasRenderer(SpriteBatch spriteBatch) {
+        this(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), spriteBatch, new ShapeRenderer(), false, true);
     }
 
     public LibGDXCanvasRenderer(int width, int height) {
-        spriteBatch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
+        this(width, height, new SpriteBatch(), new ShapeRenderer(), true, true);
+    }
+
+    public LibGDXCanvasRenderer(int width, int height, SpriteBatch spriteBatch) {
+        this(width, height, spriteBatch, new ShapeRenderer(), false, true);
+    }
+
+    public LibGDXCanvasRenderer(int width, int height, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        this(width, height, spriteBatch, shapeRenderer, false, false);
+    }
+
+    public LibGDXCanvasRenderer(int width, int height, SpriteBatch spriteBatch, ShapeRenderer shapeRenderer, boolean controlSpriteBatch, boolean controlShapeRenderer) {
+        this.spriteBatch = spriteBatch;
+        this.shapeRenderer = shapeRenderer;
+        this.controlSpriteBatch = controlSpriteBatch;
+        this.controlShapeRenderer = controlShapeRenderer;
 
         resize(width, height);
     }
@@ -64,8 +85,10 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         screenWidth = width;
         screenHeight = height;
 
-        spriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
-        shapeRenderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
+        if (controlSpriteBatch) {
+            spriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
+            shapeRenderer.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
+        }
     }
 
     @Override
@@ -75,13 +98,22 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         }
         cropCount = 0;
 
-        spriteBatch.begin();
+        if (controlSpriteBatch) {
+            spriteBatch.begin();
+        } else {
+            lastMatrix = spriteBatch.getProjectionMatrix();
+            spriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
+        }
     }
 
     @Override
     public void postRender() {
         spriteBatch.flush();
-        spriteBatch.end();
+        if (controlSpriteBatch) {
+            spriteBatch.end();
+        } else {
+            spriteBatch.setProjectionMatrix(lastMatrix);
+        }
     }
 
     @Override
@@ -115,14 +147,18 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         spriteBatch.flush();
         spriteBatch.end();
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        if (controlShapeRenderer) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        }
 
         shapeRenderer.setColor(GdxColorUtil.terasologyToGDXColor(color));
         // NOTE: The constant line width 2 is used in Terasology's rendering code (which NUI's implementation relied on)
         shapeRenderer.rectLine(sx, screenHeight - sy, ex, screenHeight - ey, 2);
 
         shapeRenderer.flush();
-        shapeRenderer.end();
+        if (controlShapeRenderer) {
+            shapeRenderer.end();
+        }
 
         spriteBatch.begin();
     }
@@ -209,7 +245,7 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         gdxFont.getGdxFont().draw(spriteBatch, gdxFont.getGlyphLayout(),
                 absoluteRegion.minX() - SHADOW_HORIZONTAL_OFFSET,
                 screenHeight - absoluteRegion.minY() - SHADOW_VERTICAL_OFFSET
-                        - vAlign.getOffset((int)gdxFont.getGlyphLayout().height, absoluteRegion.height()));
+                        - vAlign.getOffset(Math.abs((int)gdxFont.getGlyphLayout().height), absoluteRegion.height()));
 
         // Standard drawing
         gdxFont.getGlyphLayout().setText(gdxFont.getGdxFont(), text,
@@ -218,7 +254,7 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         gdxFont.getGdxFont().draw(spriteBatch, gdxFont.getGlyphLayout(),
                 absoluteRegion.minX(),
                 screenHeight - absoluteRegion.minY()
-                        - vAlign.getOffset((int)gdxFont.getGlyphLayout().height, absoluteRegion.height()));
+                        - vAlign.getOffset(Math.abs((int)gdxFont.getGlyphLayout().height), absoluteRegion.height()));
     }
 
     @Override

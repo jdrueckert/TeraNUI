@@ -42,7 +42,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'org.terasology.nui'
             artifactId = 'nui-libgdx'
-            version = '0.1'
+            version = nuiVersion
 
             from components.java
         }
