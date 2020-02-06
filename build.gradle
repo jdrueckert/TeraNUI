@@ -3,7 +3,7 @@ plugins {
 }
 
 ext {
-    nuiVersion = "0.1"
+    nuiVersion = "0.2"
 }
 
 dependencies {
