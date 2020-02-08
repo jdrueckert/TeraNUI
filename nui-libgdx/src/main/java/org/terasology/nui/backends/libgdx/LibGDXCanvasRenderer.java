@@ -101,7 +101,7 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
         if (controlSpriteBatch) {
             spriteBatch.begin();
         } else {
-            lastMatrix = spriteBatch.getProjectionMatrix();
+            lastMatrix = spriteBatch.getProjectionMatrix().cpy();
             spriteBatch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0, screenWidth, screenHeight));
         }
     }
