@@ -20,7 +20,7 @@ public class FocusManagerImpl implements FocusManager {
 
     @Override
     public void setFocus(UIWidget widget) {
-        if (widget == currentFocus) {
+        if (widget == currentFocus || (widget != null && !widget.canBeFocus())) {
             return;
         }
 
