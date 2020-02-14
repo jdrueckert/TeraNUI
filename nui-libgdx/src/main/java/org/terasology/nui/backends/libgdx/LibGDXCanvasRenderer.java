@@ -31,12 +31,20 @@ import org.terasology.math.geom.Rect2f;
 import org.terasology.math.geom.Rect2i;
 import org.terasology.math.geom.Vector2i;
 import org.terasology.nui.Color;
+import org.terasology.nui.FontColor;
 import org.terasology.nui.HorizontalAlign;
 import org.terasology.nui.ScaleMode;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.VerticalAlign;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.canvas.CanvasRenderer;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class LibGDXCanvasRenderer implements CanvasRenderer {
     private SpriteBatch spriteBatch;
@@ -247,14 +255,58 @@ public class LibGDXCanvasRenderer implements CanvasRenderer {
                 screenHeight - absoluteRegion.minY() - SHADOW_VERTICAL_OFFSET
                         - vAlign.getOffset(Math.abs((int)gdxFont.getGlyphLayout().height), absoluteRegion.height()));
 
-        // Standard drawing
-        gdxFont.getGlyphLayout().setText(gdxFont.getGdxFont(), text,
-                new com.badlogic.gdx.graphics.Color(color.rf(), color.gf(), color.bf(), color.af() * alpha), absoluteRegion.width(),
-                gdxAlignment, true);
-        gdxFont.getGdxFont().draw(spriteBatch, gdxFont.getGlyphLayout(),
-                absoluteRegion.minX(),
-                screenHeight - absoluteRegion.minY()
-                        - vAlign.getOffset(Math.abs((int)gdxFont.getGlyphLayout().height), absoluteRegion.height()));
+        Deque<Color> colorStack = new LinkedList<Color>();
+        colorStack.push(color);
+
+        List<Map.Entry<String, Color>> textSegments = new ArrayList<>();
+        StringBuilder currentSegment = new StringBuilder();
+        for (char character : text.toCharArray()) {
+            if (FontColor.isValid(character)) {
+                if (character != FontColor.getReset()) {
+                    colorStack.push(FontColor.toColor(character));
+                } else if (currentSegment.length() != 0) {
+                    textSegments.add(new AbstractMap.SimpleEntry<>(currentSegment.toString(), colorStack.pop()));
+                    currentSegment.delete(0, currentSegment.length());
+                }
+            } else {
+                currentSegment.append(character);
+            }
+        }
+
+        if (currentSegment.length() != 0) {
+            textSegments.add(new AbstractMap.SimpleEntry<>(currentSegment.toString(), colorStack.pop()));
+        }
+
+        int textX = absoluteRegion.minX();
+        int textY = screenHeight - absoluteRegion.minY()
+                - vAlign.getOffset(Math.abs((int)gdxFont.getGlyphLayout().height), absoluteRegion.height());
+
+        int lineHeight = Math.abs(gdxFont.getLineHeight());
+
+        for (Map.Entry<String, Color> textSegment : textSegments) {
+            String contents = FontColor.stripColor(textSegment.getKey());
+            Color segmentColor = textSegment.getValue();
+
+            if (contents.startsWith("\n")) {
+                textX = absoluteRegion.minX();
+                textY += lineHeight;
+            }
+
+            // Standard drawing
+            gdxFont.getGlyphLayout().setText(gdxFont.getGdxFont(), contents,
+                    new com.badlogic.gdx.graphics.Color(segmentColor.rf(), segmentColor.gf(), segmentColor.bf(), segmentColor.af() * alpha), absoluteRegion.width(),
+                    gdxAlignment, true);
+            gdxFont.getGdxFont().draw(spriteBatch, gdxFont.getGlyphLayout(), textX, textY);
+
+            textX += gdxFont.getGlyphLayout().width;
+
+            int textHeight = (int) Math.abs(gdxFont.getGlyphLayout().height);
+            textY -= Math.max(textHeight, lineHeight);
+
+            if (contents.endsWith("\n")) {
+                textX = absoluteRegion.minX();
+            }
+        }
     }
 
     @Override
