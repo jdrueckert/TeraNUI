@@ -23,9 +23,9 @@ import org.terasology.input.Keyboard;
 import org.terasology.input.Keyboard.KeyId;
 import org.terasology.input.MouseInput;
 import org.terasology.input.device.KeyboardDevice;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.FontColor;
 import org.terasology.nui.FontUnderline;
 import org.terasology.nui.asset.font.Font;
@@ -44,6 +44,7 @@ import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.util.RectUtility;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -230,7 +231,7 @@ public class UIText extends WidgetWithOrder {
         String textToDraw = passwordMode ? buildPasswordString() : text.get();
         int widthForDraw = (multiline) ? multilineWidth : lastFont.getWidth(textToDraw);
         try (SubRegion ignored = canvas.subRegion(canvas.getRegion(), true);
-             SubRegion ignored2 = canvas.subRegion(Rect2i.createFromMinAndSize(-offset, 0, widthForDraw + 1, Integer.MAX_VALUE), false)) {
+             SubRegion ignored2 = canvas.subRegion(RectUtility.createFromMinAndSize(-offset, 0, widthForDraw + 1, Integer.MAX_VALUE), false)) {
             if (isShowingHintText && !readOnly) {
                 canvas.drawTextRaw(textToDraw, lastFont, canvas.getCurrentStyle().getHintTextColor(), canvas.getRegion());
             } else {
@@ -286,7 +287,7 @@ public class UIText extends WidgetWithOrder {
                 if (!selectionString.isEmpty()) {
                     int selectionWidth = font.getWidth(selectionString);
                     Vector2i selectionTopLeft = new Vector2i(offsetX, (lineOffset) * font.getLineHeight());
-                    Rect2i region = Rect2i.createFromMinAndSize(selectionTopLeft.x, selectionTopLeft.y, selectionWidth, font.getLineHeight());
+                    Rectanglei region = RectUtility.createFromMinAndSize(selectionTopLeft.x, selectionTopLeft.y, selectionWidth, font.getLineHeight());
 
                     canvas.drawTexture(cursorTexture, region, textColor);
                     canvas.drawTextRaw(FontUnderline.strip(FontColor.stripColor(selectionString)), font, textColor.inverse(), region);
@@ -315,7 +316,7 @@ public class UIText extends WidgetWithOrder {
             // TODO: Support different alignments
 
             int lastLineWidth = font.getWidth(lines.get(lines.size() - 1));
-            Rect2i region = Rect2i.createFromMinAndSize(lastLineWidth, (lines.size() - 1) * font.getLineHeight(),
+            Rectanglei region = RectUtility.createFromMinAndSize(lastLineWidth, (lines.size() - 1) * font.getLineHeight(),
                     1, font.getLineHeight());
             canvas.drawTexture(cursorTexture, region, canvas.getCurrentStyle().getTextColor());
         }
@@ -906,7 +907,7 @@ public class UIText extends WidgetWithOrder {
      * Make sure that the cursor position lies within 0 and the length of the text in the widget.
      */
     protected void correctCursor() {
-        cursorPosition = TeraMath.clamp(cursorPosition, 0, getText().length());
-        selectionStart = TeraMath.clamp(selectionStart, 0, getText().length());
+        cursorPosition = NUIMathUtil.clamp(cursorPosition, 0, getText().length());
+        selectionStart = NUIMathUtil.clamp(selectionStart, 0, getText().length());
     }
 }

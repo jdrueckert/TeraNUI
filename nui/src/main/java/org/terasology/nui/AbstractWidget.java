@@ -16,7 +16,7 @@
 package org.terasology.nui;
 
 import com.google.common.collect.Lists;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.events.NUIBindButtonEvent;
 import org.terasology.input.ButtonState;
 import org.terasology.input.Input;

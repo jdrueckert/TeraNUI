@@ -15,9 +15,8 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -25,6 +24,7 @@ import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.ScaleMode;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.databinding.DefaultBinding;
+import org.terasology.nui.util.RectUtility;
 
 /**
  * An animated loading bar
@@ -45,7 +45,7 @@ public class UILoadBar extends CoreWidget {
     @Override
     public void onDraw(Canvas canvas) {
         if (fillTexture != null) {
-            int size = TeraMath.floorToInt(canvas.size().x * getValue());
+            int size = NUIMathUtil.floorToInt(canvas.size().x * getValue());
             int barWidth = fillTexture.getWidth();
             int offset = 0;
             if ( animate) {
@@ -55,14 +55,14 @@ public class UILoadBar extends CoreWidget {
             // Draw Offset
             if (offset != 0) {
                 int drawWidth = Math.min(size, offset);
-                canvas.drawTextureRaw(fillTexture, Rect2i.createFromMinAndSize(0, 0, drawWidth, canvas.size().y),
+                canvas.drawTextureRaw(fillTexture, RectUtility.createFromMinAndSize(0, 0, drawWidth, canvas.size().y),
                         ScaleMode.STRETCH, barWidth - offset, 0, drawWidth, canvas.size().y);
                 drawnWidth += drawWidth;
             }
             // Draw Remainder
             while (drawnWidth < size) {
                 int drawWidth = Math.min(size - drawnWidth, barWidth);
-                canvas.drawTextureRaw(fillTexture, Rect2i.createFromMinAndSize(drawnWidth, 0, drawWidth, canvas.size().y),
+                canvas.drawTextureRaw(fillTexture, RectUtility.createFromMinAndSize(drawnWidth, 0, drawWidth, canvas.size().y),
                         ScaleMode.STRETCH, 0, 0, drawWidth, canvas.size().y);
                 drawnWidth += drawWidth;
             }
@@ -71,7 +71,7 @@ public class UILoadBar extends CoreWidget {
 
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
-        return Vector2i.zero();
+        return new Vector2i();
     }
 
     @Override

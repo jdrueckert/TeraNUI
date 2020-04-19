@@ -20,8 +20,8 @@ import com.google.common.collect.Lists;
 import org.terasology.input.Keyboard;
 import org.terasology.input.MouseInput;
 import org.terasology.input.device.KeyboardDevice;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.Color;
@@ -38,6 +38,7 @@ import org.terasology.nui.events.NUIMouseOverEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
 import org.terasology.nui.itemRendering.ItemRenderer;
 import org.terasology.nui.itemRendering.ToStringTextRenderer;
+import org.terasology.nui.util.RectUtility;
 import org.terasology.nui.widgets.treeView.Tree;
 import org.terasology.nui.widgets.treeView.TreeKeyEventListener;
 import org.terasology.nui.widgets.treeView.TreeModel;
@@ -133,10 +134,10 @@ public class UITreeView<T> extends CoreWidget {
 
             // Calculate the node's height and overall region.
             int nodeHeight = canvas.getCurrentStyle().getMargin()
-                .grow(itemRenderer.getPreferredSize(node.getValue(), canvas).addX(node.getDepth() * levelIndent.get()))
-                .getY();
+                .grow(itemRenderer.getPreferredSize(node.getValue(), canvas).add(node.getDepth() * levelIndent.get(), 0))
+                .y;
 
-            Rect2i nodeRegion = Rect2i.createFromMinAndSize((node.getDepth() + 1) * levelIndent.get(),
+            Rectanglei nodeRegion = RectUtility.createFromMinAndSize((node.getDepth() + 1) * levelIndent.get(),
                 currentHeight,
                 canvas.size().x - (node.getDepth() + 1) * levelIndent.get(),
                 nodeHeight);
@@ -146,7 +147,7 @@ public class UITreeView<T> extends CoreWidget {
                 canvas.setPart(EXPAND_BUTTON);
 
                 setButtonMode(canvas, node, buttonListener);
-                Rect2i buttonRegion = Rect2i.createFromMinAndSize(node.getDepth() * levelIndent.get(),
+                Rectanglei buttonRegion = RectUtility.createFromMinAndSize(node.getDepth() * levelIndent.get(),
                     currentHeight,
                     levelIndent.get(),
                     nodeHeight);
@@ -190,14 +191,14 @@ public class UITreeView<T> extends CoreWidget {
             Tree<T> node = model.get().getNode(i);
             Vector2i preferredSize = canvas.getCurrentStyle().getMargin()
                 .grow(itemRenderer.getPreferredSize(node.getValue(), canvas)
-                    .addX(node.getDepth() * levelIndent.get()));
+                    .add(node.getDepth() * levelIndent.get(), 0));
             result.x = Math.max(result.x, preferredSize.x);
             result.y += preferredSize.y;
         }
         model.get().setEnumerateExpandedOnly(true);
 
         // Account for the expand/contract button!
-        result.addX(levelIndent.get());
+        result.add(levelIndent.get(), 0);
 
         return result;
     }
@@ -349,46 +350,46 @@ public class UITreeView<T> extends CoreWidget {
         }
     }
 
-    private void drawButton(Canvas canvas, Rect2i buttonRegion, ExpandButtonInteractionListener listener) {
+    private void drawButton(Canvas canvas, Rectanglei buttonRegion, ExpandButtonInteractionListener listener) {
         canvas.drawBackground(buttonRegion);
         canvas.addInteractionRegion(listener, buttonRegion);
     }
 
-    private void drawNode(Canvas canvas, Rect2i nodeRegion, Tree<T> node, TreeViewListenerSet listenerSet) {
+    private void drawNode(Canvas canvas, Rectanglei nodeRegion, Tree<T> node, TreeViewListenerSet listenerSet) {
         canvas.drawBackground(nodeRegion);
         itemRenderer.draw(node.getValue(), canvas, canvas.getCurrentStyle().getMargin().shrink(nodeRegion));
 
         // Add the top listener.
         canvas.addInteractionRegion(listenerSet.getTopListener(), itemRenderer.getTooltip(node.getValue()),
-            Rect2i.createFromMinAndSize(nodeRegion.minX(), nodeRegion.minY(),
-                nodeRegion.width(), nodeRegion.height() / 3));
+            RectUtility.createFromMinAndSize(nodeRegion.minX, nodeRegion.minY,
+                nodeRegion.lengthX(), nodeRegion.lengthY() / 3));
 
         // Add the central listener.
         canvas.addInteractionRegion(listenerSet.getCenterListener(), itemRenderer.getTooltip(node.getValue()),
-            Rect2i.createFromMinAndSize(nodeRegion.minX(), nodeRegion.minY() + nodeRegion.height() / 3,
-                nodeRegion.width(), nodeRegion.height() / 3));
+            RectUtility.createFromMinAndSize(nodeRegion.minX, nodeRegion.minY + nodeRegion.lengthY() / 3,
+                nodeRegion.lengthX(), nodeRegion.lengthY() / 3));
 
-        int heightOffset = nodeRegion.height() - 3 * (nodeRegion.height() / 3);
+        int heightOffset = nodeRegion.lengthY() - 3 * (nodeRegion.lengthY() / 3);
 
         // Add the bottom listener.
         canvas.addInteractionRegion(listenerSet.getBottomListener(), itemRenderer.getTooltip(node.getValue()),
-            Rect2i.createFromMinAndSize(nodeRegion.minX(), nodeRegion.minY() + 2 * nodeRegion.height() / 3,
-                nodeRegion.width(), heightOffset + nodeRegion.height() / 3));
+            RectUtility.createFromMinAndSize(nodeRegion.minX, nodeRegion.minY + 2 * nodeRegion.lengthY() / 3,
+                nodeRegion.lengthX(), heightOffset + nodeRegion.lengthY() / 3));
     }
 
-    private void drawDragHint(Canvas canvas, Rect2i nodeRegion) {
+    private void drawDragHint(Canvas canvas, Rectanglei nodeRegion) {
         if (state.getMouseOverType() == MouseOverType.TOP) {
             // Draw a line at the top of the node.
-            canvas.drawLine(nodeRegion.minX(), nodeRegion.minY(), nodeRegion.maxX(), nodeRegion.minY(), Color.WHITE);
+            canvas.drawLine(nodeRegion.minX, nodeRegion.minY, nodeRegion.maxX, nodeRegion.minY, Color.WHITE);
         } else if (state.getMouseOverType() == MouseOverType.CENTER) {
             // Draw a border around the node.
-            canvas.drawLine(nodeRegion.minX(), nodeRegion.minY(), nodeRegion.maxX(), nodeRegion.minY(), Color.WHITE);
-            canvas.drawLine(nodeRegion.maxX(), nodeRegion.minY(), nodeRegion.maxX(), nodeRegion.maxY(), Color.WHITE);
-            canvas.drawLine(nodeRegion.minX(), nodeRegion.minY(), nodeRegion.minX(), nodeRegion.maxY(), Color.WHITE);
-            canvas.drawLine(nodeRegion.minX(), nodeRegion.maxY(), nodeRegion.maxX(), nodeRegion.maxY(), Color.WHITE);
+            canvas.drawLine(nodeRegion.minX, nodeRegion.minY, nodeRegion.maxX, nodeRegion.minY, Color.WHITE);
+            canvas.drawLine(nodeRegion.maxX, nodeRegion.minY, nodeRegion.maxX, nodeRegion.maxY, Color.WHITE);
+            canvas.drawLine(nodeRegion.minX, nodeRegion.minY, nodeRegion.minX, nodeRegion.maxY, Color.WHITE);
+            canvas.drawLine(nodeRegion.minX, nodeRegion.maxY, nodeRegion.maxX, nodeRegion.maxY, Color.WHITE);
         } else { // MouseOverType.BOTTOM
             // Draw a line at the bottom of the node.
-            canvas.drawLine(nodeRegion.minX(), nodeRegion.maxY(), nodeRegion.maxX(), nodeRegion.maxY(), Color.WHITE);
+            canvas.drawLine(nodeRegion.minX, nodeRegion.maxY, nodeRegion.maxX, nodeRegion.maxY, Color.WHITE);
         }
     }
 

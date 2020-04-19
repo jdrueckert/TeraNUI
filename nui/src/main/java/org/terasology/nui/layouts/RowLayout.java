@@ -19,13 +19,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
 import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.UIWidget;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -131,7 +132,7 @@ public class RowLayout extends CoreLayout<RowLayoutHint> {
             int xOffset = 0;
             for (int i = 0; i < contents.size(); ++i) {
                 int itemWidth = widths.get(i);
-                Rect2i region = Rect2i.createFromMinAndSize(xOffset, 0, itemWidth, canvas.size().y);
+                Rectanglei region = RectUtility.createFromMinAndSize(xOffset, 0, itemWidth, canvas.size().y);
                 canvas.drawWidget(contents.get(i), region);
                 xOffset += itemWidth;
                 xOffset += horizontalSpacing;
@@ -159,7 +160,7 @@ public class RowLayout extends CoreLayout<RowLayoutHint> {
                 RowLayoutHint hint = hints.get(widget);
                 if (hint != null) {
                     if (!hint.isUseContentWidth() && hint.getRelativeWidth() != 0) {
-                        int elementWidth = TeraMath.floorToInt(hint.getRelativeWidth() * width);
+                        int elementWidth = NUIMathUtil.floorToInt(hint.getRelativeWidth() * width);
                         results.add(elementWidth);
                         totalWidthUsed += elementWidth;
                     } else {
@@ -215,7 +216,7 @@ public class RowLayout extends CoreLayout<RowLayoutHint> {
 
         Vector2i result = new Vector2i(areaHint.x, 0);
         for (int i = 0; i < contents.size(); ++i) {
-            Vector2i widgetSize = canvas.calculateRestrictedSize(contents.get(i), new Vector2i(TeraMath.floorToInt(widths.get(i)), areaHint.y));
+            Vector2i widgetSize = canvas.calculateRestrictedSize(contents.get(i), new Vector2i(NUIMathUtil.floorToInt(widths.get(i)), areaHint.y));
             result.y = Math.max(result.y, widgetSize.y);
         }
         return result;

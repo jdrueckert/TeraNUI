@@ -15,26 +15,19 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.input.MouseInput;
 import org.terasology.input.device.MouseDevice;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
-import org.terasology.nui.FocusManager;
 import org.terasology.nui.InteractionListener;
 import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.SubRegion;
 import org.terasology.nui.UIWidget;
-import org.terasology.nui.events.NUIMouseClickEvent;
-import org.terasology.nui.events.NUIMouseDoubleClickEvent;
-import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseOverEvent;
-import org.terasology.nui.events.NUIMouseReleaseEvent;
-import org.terasology.nui.events.NUIMouseWheelEvent;
 import org.terasology.nui.skin.UIStyle;
+import org.terasology.nui.util.RectUtility;
 
 /**
  */
@@ -92,7 +85,7 @@ public class CursorAttachment extends CoreWidget {
                 top = mouse.getPosition().y + MOUSE_CURSOR_HEIGHT;
                 break;
         }
-        top = TeraMath.clamp(top, 0, canvas.size().y - attachmentSize.y);
+        top = NUIMathUtil.clamp(top, 0, canvas.size().y - attachmentSize.y);
         int left;
         switch (style.getHorizontalAlignment()) {
             case RIGHT:
@@ -105,10 +98,10 @@ public class CursorAttachment extends CoreWidget {
                 left = mouse.getPosition().x;
                 break;
         }
-        left = TeraMath.clamp(left, 0, canvas.size().x - attachmentSize.x);
+        left = NUIMathUtil.clamp(left, 0, canvas.size().x - attachmentSize.x);
 
 
-        try (SubRegion ignored = canvas.subRegion(Rect2i.createFromMinAndSize(left, top, attachmentSize.x, attachmentSize.y), false)) {
+        try (SubRegion ignored = canvas.subRegion(RectUtility.createFromMinAndSize(left, top, attachmentSize.x, attachmentSize.y), false)) {
             canvas.drawBackground();
             canvas.drawWidget(attachment, style.getBackgroundBorder().shrink(canvas.getRegion()));
         }

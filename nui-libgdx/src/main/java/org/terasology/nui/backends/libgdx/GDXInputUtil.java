@@ -18,7 +18,7 @@ package org.terasology.nui.backends.libgdx;
 import com.badlogic.gdx.Input;
 import org.terasology.input.Keyboard;
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 
 import java.util.HashMap;
 import java.util.Map;

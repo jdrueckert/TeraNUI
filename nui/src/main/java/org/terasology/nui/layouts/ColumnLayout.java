@@ -17,9 +17,9 @@ package org.terasology.nui.layouts;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
 import org.terasology.nui.LayoutConfig;
@@ -28,6 +28,7 @@ import org.terasology.nui.UIWidget;
 import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.events.NUIMouseButtonEvent;
 import org.terasology.nui.events.NUIMouseWheelEvent;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.Iterator;
 import java.util.List;
@@ -120,7 +121,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
     public void onDraw(Canvas canvas) {
         if (!widgetList.isEmpty()) {
             Vector2i availableSize = canvas.size();
-            int numRows = TeraMath.ceilToInt((float) widgetList.size() / columns);
+            int numRows = NUIMathUtil.ceilToInt((float) widgetList.size() / columns);
             if (numRows > 0) {
                 availableSize.y -= verticalSpacing * (numRows - 1);
             }
@@ -138,7 +139,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
             if (autoSizeColumns) {
                 for (RowInfo row : rowInfos) {
                     for (int column = 0; column < row.widgetSizes.size(); column++) {
-                        minWidths[column] = Math.max(minWidths[column], row.widgetSizes.get(column).getX());
+                        minWidths[column] = Math.max(minWidths[column], row.widgetSizes.get(column).x);
                     }
                 }
 
@@ -152,7 +153,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
             } else {
                 minRowWidth = canvas.size().x;
                 for (int i = 0; i < columns; ++i) {
-                    minWidths[i] = TeraMath.floorToInt((minRowWidth - (columns - 1) * (float) horizontalSpacing) * columnWidths[i]);
+                    minWidths[i] = NUIMathUtil.floorToInt((minRowWidth - (columns - 1) * (float) horizontalSpacing) * columnWidths[i]);
                 }
             }
 
@@ -187,7 +188,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
                     UIWidget widget = row.get(i);
                     int rowHeight = rowInfo.height;
                     if (widget != null) {
-                        Rect2i drawRegion = Rect2i.createFromMinAndSize(cellOffsetX, rowOffsetY, minWidths[i], rowHeight);
+                        Rectanglei drawRegion = RectUtility.createFromMinAndSize(cellOffsetX, rowOffsetY, minWidths[i], rowHeight);
                         canvas.drawWidget(widget, drawRegion);
                     }
                     cellOffsetX += minWidths[i] + horizontalSpacing;
@@ -222,7 +223,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i areaHint) {
         Vector2i availableSize = new Vector2i(areaHint);
-        int numRows = TeraMath.ceilToInt((float) widgetList.size() / columns);
+        int numRows = NUIMathUtil.ceilToInt((float) widgetList.size() / columns);
         if (numRows > 0) {
             availableSize.y = Math.max(1, availableSize.y - verticalSpacing * (numRows - 1));
         }
@@ -241,7 +242,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
                 size.y += verticalSpacing;
             }
             for (int i = 0; i < rowInfo.widgetSizes.size(); ++i) {
-                columnSizes[i] = Math.max(columnSizes[i], rowInfo.widgetSizes.get(i).getX());
+                columnSizes[i] = Math.max(columnSizes[i], rowInfo.widgetSizes.get(i).x);
             }
         }
         for (int columnSize : columnSizes) {
@@ -250,7 +251,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
 
         if (!autoSizeColumns) {
             for (int i = 0; i < columns; ++i) {
-                size.x = Math.max(size.x, TeraMath.floorToInt(columnSizes[i] / columnWidths[i]));
+                size.x = Math.max(size.x, NUIMathUtil.floorToInt(columnSizes[i] / columnWidths[i]));
             }
         }
 
@@ -272,9 +273,9 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
                 columnSizes[i] = Math.max(columnSizes[i], maxSize.x);
                 rowHeight = Math.max(rowHeight, maxSize.y);
             }
-            size.y = TeraMath.addClampAtMax(size.y, rowHeight);
+            size.y = NUIMathUtil.addClampAtMax(size.y, rowHeight);
             if (rows.hasNext()) {
-                size.y = TeraMath.addClampAtMax(size.y, verticalSpacing);
+                size.y = NUIMathUtil.addClampAtMax(size.y, verticalSpacing);
             }
         }
 
@@ -285,7 +286,7 @@ public class ColumnLayout extends CoreLayout<LayoutHint> {
 
         if (!autoSizeColumns) {
             for (int i = 0; i < columns; ++i) {
-                width = Math.min(width, TeraMath.floorToInt(columnSizes[i] / columnWidths[i]));
+                width = Math.min(width, NUIMathUtil.floorToInt(columnSizes[i] / columnWidths[i]));
             }
         }
 

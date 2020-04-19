@@ -16,12 +16,13 @@
 package org.terasology.nui.layouts;
 
 import com.google.common.collect.Lists;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
 import org.terasology.nui.LayoutHint;
 import org.terasology.nui.UIWidget;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class FlowLayout extends CoreLayout<LayoutHint> {
                 filledWidth = 0;
                 filledHeight = 0;
             }
-            canvas.drawWidget(widget, Rect2i.createFromMinAndSize(filledWidth, heightOffset, size.x, size.y));
+            canvas.drawWidget(widget, RectUtility.createFromMinAndSize(filledWidth, heightOffset, size.x, size.y));
             filledWidth += size.x;
             filledHeight = Math.max(filledHeight, size.y);
         }

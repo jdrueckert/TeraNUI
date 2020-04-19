@@ -18,9 +18,9 @@ package org.terasology.nui.widgets;
 import com.google.common.collect.Lists;
 import org.terasology.input.Keyboard;
 import org.terasology.nui.itemRendering.ToStringTextRenderer;
-import org.terasology.math.geom.Border;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.ActivatableWidget;
 import org.terasology.nui.BaseInteractionListener;
@@ -33,6 +33,7 @@ import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.itemRendering.ItemRenderer;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +101,9 @@ public class UIDropdown<T> extends ActivatableWidget {
             Font font = canvas.getCurrentStyle().getFont();
             Border itemMargin = canvas.getCurrentStyle().getMargin();
             int height = (font.getLineHeight() + itemMargin.getTotalHeight()) * options.get().size() + canvas.getCurrentStyle().getBackgroundBorder().getTotalHeight();
-            canvas.addInteractionRegion(mainListener, Rect2i.createFromMinAndSize(0, 0, canvas.size().x, canvas.size().y + height));
+            canvas.addInteractionRegion(mainListener, RectUtility.createFromMinAndSize(0, 0, canvas.size().x, canvas.size().y + height));
 
-            Rect2i location = Rect2i.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height);
+            Rectanglei location = RectUtility.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height);
             canvas.drawBackground(location);
 
             int itemHeight = itemMargin.getTotalHeight() + font.getLineHeight();
@@ -117,7 +118,7 @@ public class UIDropdown<T> extends ActivatableWidget {
                 } else {
                     canvas.setMode(DEFAULT_MODE);
                 }
-                Rect2i itemRegion = Rect2i.createFromMinAndSize(0, canvas.size().y + itemHeight * i, canvas.size().x, itemHeight);
+                Rectanglei itemRegion = RectUtility.createFromMinAndSize(0, canvas.size().y + itemHeight * i, canvas.size().x, itemHeight);
                 canvas.drawBackground(itemRegion);
                 optionRenderer.draw(options.get().get(i), canvas, itemMargin.shrink(itemRegion));
                 canvas.addInteractionRegion(optionListeners.get(i), itemRegion);

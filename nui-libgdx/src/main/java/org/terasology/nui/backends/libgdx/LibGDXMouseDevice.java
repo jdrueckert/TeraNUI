@@ -18,7 +18,7 @@ package org.terasology.nui.backends.libgdx;
 import com.badlogic.gdx.Gdx;
 import org.terasology.input.device.MouseAction;
 import org.terasology.input.device.MouseDevice;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 
 import java.util.LinkedList;
 import java.util.Queue;

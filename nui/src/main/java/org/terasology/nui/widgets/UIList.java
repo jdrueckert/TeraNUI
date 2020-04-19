@@ -19,9 +19,9 @@ import com.google.common.collect.Lists;
 import org.terasology.input.Keyboard;
 import org.terasology.input.MouseInput;
 import org.terasology.nui.itemRendering.ToStringTextRenderer;
-import org.terasology.math.geom.Border;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.ActivatableWidget;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
@@ -32,6 +32,7 @@ import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDoubleClickEvent;
 import org.terasology.nui.events.NUIMouseOverEvent;
 import org.terasology.nui.itemRendering.ItemRenderer;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class UIList<T> extends ActivatableWidget {
             T item = list.get().get(i);
             Vector2i preferredSize = margin.grow(itemRenderer.getPreferredSize(item, canvas));
 
-            Rect2i itemRegion = Rect2i.createFromMinAndSize(0, (int) yOffset, canvas.size().x, preferredSize.y);
+            Rectanglei itemRegion = RectUtility.createFromMinAndSize(0, (int) yOffset, canvas.size().x, preferredSize.y);
             ItemInteractionListener listener = optionListeners.get(i);
             if (enabled) {
                 if (Objects.equals(item, selection.get())) {
@@ -101,7 +102,7 @@ public class UIList<T> extends ActivatableWidget {
             yOffset += preferredSize.y - 1 / (double) optionListeners.size();
 
             if (i == list.get().size() - 1) {
-                itemSize = preferredSize.getY();
+                itemSize = preferredSize.y;
                 canvasSize = canvas.size().y;
             }
         }

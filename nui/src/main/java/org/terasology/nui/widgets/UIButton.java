@@ -16,7 +16,7 @@
 package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.Sound;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.UITextureRegion;
@@ -168,7 +168,7 @@ public class UIButton extends ActivatableWidget {
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i areaHint) {
         Font font = canvas.getCurrentStyle().getFont();
-        List<String> lines = TextLineBuilder.getLines(font, text.get(), areaHint.getX());
+        List<String> lines = TextLineBuilder.getLines(font, text.get(), areaHint.x);
         return font.getSize(lines);
     }
 

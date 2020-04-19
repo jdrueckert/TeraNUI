@@ -15,8 +15,8 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.LayoutConfig;
@@ -32,9 +32,9 @@ import java.util.List;
  */
 public class UIRadialSection extends WidgetWithOrder {
 
-    private Rect2i infoRegion;
-    private Rect2i innerRegion;
-    private Rect2i sectionRegion;
+    private Rectanglei infoRegion;
+    private Rectanglei innerRegion;
+    private Rectanglei sectionRegion;
     private UITextureRegion sectionTexture;
     private UITextureRegion selectedTexture;
     private Boolean isSelected = false;
@@ -107,7 +107,7 @@ public class UIRadialSection extends WidgetWithOrder {
 
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
-        return sectionRegion == null ? Vector2i.zero() : sectionRegion.size();
+        return sectionRegion == null ? new Vector2i() : new Vector2i(sectionRegion.lengthX(), sectionRegion.lengthY());
     }
 
     /**
@@ -175,21 +175,21 @@ public class UIRadialSection extends WidgetWithOrder {
     /**
      * Sets the region in which to draw the info widget
      */
-    public void setInfoRegion(Rect2i newRegion) {
+    public void setInfoRegion(Rectanglei newRegion) {
         infoRegion = newRegion;
     }
 
     /**
      * Sets the draw region of the widget itself
      */
-    public void setDrawRegion(Rect2i region) {
+    public void setDrawRegion(Rectanglei region) {
         sectionRegion = region;
     }
 
     /**
      * Sets the draw region of the items inside the widget.
      */
-    public void setInnerRegion(Rect2i region) {
+    public void setInnerRegion(Rectanglei region) {
         innerRegion = region;
     }
 }

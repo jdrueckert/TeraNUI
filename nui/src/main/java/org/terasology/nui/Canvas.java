@@ -19,9 +19,9 @@ package org.terasology.nui;
 * TODO: Should we keep the Mesh and Material methods here?
 */
 
-import org.terasology.math.geom.Border;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 //import org.terasology.nui.asset.material.Material;
 //import org.terasology.nui.asset.mesh.Mesh;
@@ -44,7 +44,7 @@ public interface Canvas {
      *
      * @return The region of drawable canvas, in pixels.
      */
-    Rect2i getRegion();
+    Rectanglei getRegion();
 
     /**
      * Sets the alpha for drawing all elements.
@@ -140,7 +140,7 @@ public interface Canvas {
      * @param element
      * @param region
      */
-    void drawWidget(UIWidget element, Rect2i region);
+    void drawWidget(UIWidget element, Rectanglei region);
 
     /**
      * Draws text, using the current style.
@@ -155,7 +155,7 @@ public interface Canvas {
      * @param text
      * @param region
      */
-    void drawText(String text, Rect2i region);
+    void drawText(String text, Rectanglei region);
 
     /**
      * Draws a texture filling the canvas using the current style.
@@ -178,7 +178,7 @@ public interface Canvas {
      * @param texture The texture to draw
      * @param region  The area to draw the texture in, in pixels
      */
-    void drawTexture(UITextureRegion texture, Rect2i region);
+    void drawTexture(UITextureRegion texture, Rectanglei region);
 
     /**
      * Draws a texture to the given region using the current style.
@@ -187,7 +187,7 @@ public interface Canvas {
      * @param region  The area to draw the texture in, in pixels
      * @param color   The color modifier for the texture
      */
-    void drawTexture(UITextureRegion texture, Rect2i region, Color color);
+    void drawTexture(UITextureRegion texture, Rectanglei region, Color color);
 
     /**
      * Draws the background of the current style, filling the entire canvas.
@@ -199,7 +199,7 @@ public interface Canvas {
      *
      * @param region
      */
-    void drawBackground(Rect2i region);
+    void drawBackground(Rectanglei region);
 
     /**
      * Allocates a sub region for drawing, until that SubRegion is closed. The top-left corner of the SubRegion
@@ -224,7 +224,7 @@ public interface Canvas {
      * @param crop   Whether to crop elements falling outside this region.
      * @return A SubRegion, to be closed when no long needed
      */
-    SubRegion subRegion(Rect2i region, boolean crop);
+    SubRegion subRegion(Rectanglei region, boolean crop);
 
     /**
      * Allocates a sub region for drawing to a target texture, until that SubRegion is closed.
@@ -273,7 +273,7 @@ public interface Canvas {
      * @param color  The color of to draw the text
      * @param region The region in which to draw the text
      */
-    void drawTextRaw(String text, Font font, Color color, Rect2i region);
+    void drawTextRaw(String text, Font font, Color color, Rectanglei region);
 
     /**
      * Draws text without using the current style, aligned within the drawWidth.  Text may include new lines.
@@ -287,7 +287,7 @@ public interface Canvas {
      * @param hAlign The horizontal alignment or justification of the text
      * @param vAlign The vertical alignment of the text
      */
-    void drawTextRaw(String text, Font font, Color color, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign);
+    void drawTextRaw(String text, Font font, Color color, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign);
 
     /**
      * Draws text without using the current style, aligned within the drawWidth.  Text may include new lines.
@@ -302,7 +302,7 @@ public interface Canvas {
      * @param hAlign     The horizontal alignment or justification of the text
      * @param vAlign     The vertical alignment of the text
      */
-    void drawTextRaw(String text, Font font, Color color, boolean underlined, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign);
+    void drawTextRaw(String text, Font font, Color color, boolean underlined, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign);
 
     /**
      * Draws shadowed text without using the current style. Text may include new lines. This text will always be left-aligned.
@@ -324,7 +324,7 @@ public interface Canvas {
      * @param shadowColor The color to draw the shadow
      * @param region      The region within which to draw this text. The text will be wrapped to new lines if it exceeds this width.
      */
-    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rect2i region);
+    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rectanglei region);
 
     /**
      * Draws shadowed text without using the current style. Text may include new lines. Additionally new lines will be added to prevent any given line exceeding drawWidth.
@@ -338,7 +338,7 @@ public interface Canvas {
      * @param hAlign      The horizontal alignment or justification of the text
      * @param vAlign      The vertical alignment of the text
      */
-    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign);
+    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign);
 
     /**
      * Draws shadowed text without using the current style. Text may include new lines. Additionally new lines will be added to prevent any given line exceeding drawWidth.
@@ -353,7 +353,7 @@ public interface Canvas {
      * @param hAlign      The horizontal alignment or justification of the text
      * @param vAlign      The vertical alignment of the text
      */
-    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, boolean underline, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign);
+    void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, boolean underline, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign);
 
     /**
      * Draws a texture to the given area without using the current style. If the texture is a different size to the area, it will be adapted according to the ScaleMode.
@@ -362,7 +362,7 @@ public interface Canvas {
      * @param region  The area to draw the texture in, in pixels
      * @param mode    The method for adapting this texture to the region
      */
-    void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode);
+    void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode);
 
     /**
      * Draws a texture to the given area without using the current style. If the texture is a different size to the area, it will be adapted according to the ScaleMode.
@@ -372,7 +372,7 @@ public interface Canvas {
      * @param color   The color modifier for drawing the texture
      * @param mode    The method for adapting this texture to the region
      */
-    void drawTextureRaw(UITextureRegion texture, Rect2i region, Color color, ScaleMode mode);
+    void drawTextureRaw(UITextureRegion texture, Rectanglei region, Color color, ScaleMode mode);
 
     /**
      * Draws a sub-region of a texture to the given area. If the texture is a different size to the area, it will be adapted according to the ScaleMode.
@@ -385,7 +385,7 @@ public interface Canvas {
      * @param uw      The width of the sub-region of the texture to draw, in pixels
      * @param uh      The height of the sub-region of the texture to draw, in pixels
      */
-    void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode, int ux, int uy, int uw, int uh);
+    void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode, int ux, int uy, int uw, int uh);
 
     /**
      * Draws a sub-region of a texture to the given area. If the texture is a different size to the area, it will be adapted according to the ScaleMode.
@@ -398,7 +398,7 @@ public interface Canvas {
      * @param uw      The width of the sub-region of the texture to draw, relative to the texture size
      * @param uh      The height of the sub-region of the texture to draw, relative to the texture size
      */
-    void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode, float ux, float uy, float uw, float uh);
+    void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode, float ux, float uy, float uw, float uh);
 
     /**
      * Draws a sub-region of a texture to the given area. If the texture is a different size to the area, it will be adapted according to the ScaleMode.
@@ -412,7 +412,7 @@ public interface Canvas {
      * @param uw      The width of the sub-region of the texture to draw, relative to the texture size
      * @param uh      The height of the sub-region of the texture to draw, relative to the texture size
      */
-    void drawTextureRaw(UITextureRegion texture, Rect2i region, Color color, ScaleMode mode, float ux, float uy, float uw, float uh);
+    void drawTextureRaw(UITextureRegion texture, Rectanglei region, Color color, ScaleMode mode, float ux, float uy, float uw, float uh);
 
     /**
      * Draws a texture with a border - allows the drawing of a texture to a wider area without distorting the edge of the texture.
@@ -422,7 +422,7 @@ public interface Canvas {
      * @param border  The size of the border.
      * @param tile    Whether to tile the center and edges, or just stretch them
      */
-    void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile);
+    void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile);
 
     /**
      * Draws a sub-region of a texture with a border - allows the drawing of a texture to a wider area without distorting the edge of the texture.
@@ -436,7 +436,7 @@ public interface Canvas {
      * @param uw      The width of the sub-region of the texture to draw, in pixels
      * @param uh      The height of the sub-region of the texture to draw, in pixels
      */
-    void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile, int ux, int uy, int uw, int uh);
+    void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile, int ux, int uy, int uw, int uh);
 
     /**
      * Draws a sub-region of a texture with a border - allows the drawing of a texture to a wider area without distorting the edge of the texture.
@@ -450,7 +450,7 @@ public interface Canvas {
      * @param uw      The width of the sub-region of the texture to draw, relative to the texture size
      * @param uh      The height of the sub-region of the texture to draw, relative to the texture size
      */
-    void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile, float ux, float uy, float uw, float uh);
+    void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile, float ux, float uy, float uw, float uh);
 
 
     /**
@@ -462,7 +462,7 @@ public interface Canvas {
      * @param material
      * @param region
      */
-    //void drawMaterial(Material material, Rect2i region);
+    //void drawMaterial(Material material, Rectanglei region);
 
     /**
      * Draws a mesh centered on the given screen position.
@@ -474,9 +474,9 @@ public interface Canvas {
      * @param offset   Offset, in object space, for the mesh
      * @param scale    A relative scale for drawing the mesh
      */
-    //void drawMesh(Mesh mesh, Material material, Rect2i region, Quat4f rotation, Vector3f offset, float scale);
+    //void drawMesh(Mesh mesh, Material material, Rectanglei region, Quat4f rotation, Vector3f offset, float scale);
 
-    //void drawMesh(Mesh mesh, Texture texture, Rect2i region, Quat4f rotation, Vector3f offset, float scale);
+    //void drawMesh(Mesh mesh, Texture texture, Rectanglei region, Quat4f rotation, Vector3f offset, float scale);
 
     /**
      * Adds an interaction region filling the region used to draw the current widget. The widget's margin is used to expand the interaction region to fill the
@@ -492,7 +492,7 @@ public interface Canvas {
      * @param listener
      * @param region
      */
-    void addInteractionRegion(InteractionListener listener, Rect2i region);
+    void addInteractionRegion(InteractionListener listener, Rectanglei region);
 
     /**
      * Adds an interaction region filling the region used to draw the current widget. The widget's margin is used to expand the interaction region to fill the
@@ -510,7 +510,7 @@ public interface Canvas {
      * @param tooltip
      * @param region
      */
-    void addInteractionRegion(InteractionListener listener, UIWidget tooltip, Rect2i region);
+    void addInteractionRegion(InteractionListener listener, UIWidget tooltip, Rectanglei region);
 
     /**
      * Adds an interaction region filling the region used to draw the current widget. The widget's margin is used to expand the interaction region to fill the
@@ -528,9 +528,9 @@ public interface Canvas {
      * @param tooltip
      * @param region
      */
-    void addInteractionRegion(InteractionListener listener, String tooltip, Rect2i region);
+    void addInteractionRegion(InteractionListener listener, String tooltip, Rectanglei region);
 
     void drawLine(int startX, int startY, int endX, int endY, Color color);
 
-    void drawFilledRectangle(Rect2i region, Color color);
+    void drawFilledRectangle(Rectanglei region, Color color);
 }

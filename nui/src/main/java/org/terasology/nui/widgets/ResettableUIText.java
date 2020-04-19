@@ -16,12 +16,13 @@
 package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Rect2i;
+import org.joml.Rectanglei;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.InteractionListener;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.events.NUIMouseClickEvent;
+import org.terasology.nui.util.RectUtility;
 
 /**
  * A text widget with a button to clear the text.
@@ -48,13 +49,13 @@ public class ResettableUIText extends UIText {
 
     @Override
     public void onDraw(Canvas canvas) {
-        Rect2i clearButtonRegion = Rect2i.createFromMinAndSize(0, 0, 30, canvas.size().y);
-        lastWidth = canvas.size().x - clearButtonRegion.size().x;
+        Rectanglei clearButtonRegion = RectUtility.createFromMinAndSize(0, 0, 30, canvas.size().y);
+        lastWidth = canvas.size().x - clearButtonRegion.lengthX();
         if (isEnabled()) {
-            canvas.addInteractionRegion(interactionListener, Rect2i.createFromMinAndMax(0, 0, canvas.size().x, canvas.size().y));
-            canvas.addInteractionRegion(clearInteractionListener, Rect2i.createFromMinAndMax(canvas.size().x, 0, canvas.size().x +
-                    clearButtonRegion.size().x, canvas.size().y));
+            canvas.addInteractionRegion(interactionListener, new Rectanglei(0, 0, canvas.size().x, canvas.size().y));
+            canvas.addInteractionRegion(clearInteractionListener, new Rectanglei(canvas.size().x, 0, canvas.size().x +
+                    clearButtonRegion.lengthX(), canvas.size().y));
         }
-        drawAll(canvas, canvas.size().x - clearButtonRegion.size().x);
+        drawAll(canvas, canvas.size().x - clearButtonRegion.lengthX());
     }
 }

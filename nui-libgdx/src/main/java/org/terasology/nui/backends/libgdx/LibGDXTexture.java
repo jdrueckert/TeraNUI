@@ -17,10 +17,11 @@ package org.terasology.nui.backends.libgdx;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import org.terasology.assets.AssetData;
-import org.terasology.math.geom.Rect2f;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglef;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.UITextureRegion;
+import org.terasology.nui.util.RectUtility;
 
 public class LibGDXTexture implements UITextureRegion, AssetData {
     private final TextureRegion texture;
@@ -33,16 +34,16 @@ public class LibGDXTexture implements UITextureRegion, AssetData {
      * @return The region of the texture represented by this asset
      */
     @Override
-    public Rect2f getRegion() {
-        return Rect2f.createFromMinAndSize(texture.getRegionX(), texture.getRegionY(), texture.getRegionWidth(), texture.getRegionHeight());
+    public Rectanglef getRegion() {
+        return RectUtility.createFromMinAndSize((float) texture.getRegionX(), texture.getRegionY(), texture.getRegionWidth(), texture.getRegionHeight());
     }
 
     /**
      * @return The pixel region of the texture represented by this asset
      */
     @Override
-    public Rect2i getPixelRegion() {
-        return Rect2i.createFromMinAndSize(texture.getRegionX(), texture.getRegionY(), texture.getRegionWidth(), texture.getRegionHeight());
+    public Rectanglei getPixelRegion() {
+        return RectUtility.createFromMinAndSize(texture.getRegionX(), texture.getRegionY(), texture.getRegionWidth(), texture.getRegionHeight());
     }
 
     @Override

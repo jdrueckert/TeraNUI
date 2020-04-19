@@ -18,7 +18,7 @@ package org.terasology.nui.backends.libgdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import org.terasology.assets.AssetData;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public class LibGDXFont implements Font, AssetData {
         glyphLayout.setText(bitmapFont, builder.toString());
 
         // NOTE: The line height is calculated like this in Terasology's implementation, so the size is larger than the actual height
-        return new Vector2i(glyphLayout.width, getLineHeight() * lines.size());
+        return new Vector2i((int) glyphLayout.width, getLineHeight() * lines.size());
     }
 
     @Override

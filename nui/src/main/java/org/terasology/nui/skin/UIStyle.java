@@ -16,7 +16,7 @@
 package org.terasology.nui.skin;
 
 import org.terasology.nui.UITextureRegion;
-import org.terasology.math.geom.Border;
+import org.terasology.nui.Border;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.Color;
 import org.terasology.nui.HorizontalAlign;

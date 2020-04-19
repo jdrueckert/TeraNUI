@@ -15,12 +15,13 @@
  */
 package org.terasology.nui.itemRendering;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.TextLineBuilder;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.List;
 
@@ -55,11 +56,11 @@ public abstract class StringTextIconRenderer<T> extends AbstractItemRenderer<T> 
             if (marginTop + texture.getHeight() + marginBottom > canvas.size().y) {
                 // Icon does not fit within the canvas - vertically shrinking it
                 int iconHeight = canvas.size().y - marginTop - marginBottom;
-                canvas.drawTexture(texture, Rect2i.createFromMinAndSize(marginLeft, marginTop, texture.getWidth(), iconHeight));
+                canvas.drawTexture(texture, RectUtility.createFromMinAndSize(marginLeft, marginTop, texture.getWidth(), iconHeight));
             } else {
                 // Icon fits within the canvas - vertically centering it
                 int iconVerticalPosition = (canvas.size().y - texture.getHeight()) / 2;
-                canvas.drawTexture(texture, Rect2i.createFromMinAndSize(marginLeft, iconVerticalPosition, texture.getWidth(), texture.getHeight()));
+                canvas.drawTexture(texture, RectUtility.createFromMinAndSize(marginLeft, iconVerticalPosition, texture.getWidth(), texture.getHeight()));
             }
         }
 
@@ -73,7 +74,7 @@ public abstract class StringTextIconRenderer<T> extends AbstractItemRenderer<T> 
             iconWidth = 0;
         }
 
-        Rect2i textRegion = Rect2i.createFromMinAndSize(iconWidth, 0, canvas.getRegion().width() - iconWidth, canvas.getRegion().height());
+        Rectanglei textRegion = RectUtility.createFromMinAndSize(iconWidth, 0, canvas.getRegion().lengthX() - iconWidth, canvas.getRegion().lengthY());
         canvas.drawText(text, textRegion);
     }
 
@@ -89,7 +90,7 @@ public abstract class StringTextIconRenderer<T> extends AbstractItemRenderer<T> 
         } else {
             int iconWidth = marginLeft + texture.getWidth() + marginRight;
             List<String> lines = TextLineBuilder.getLines(font, text, canvas.size().x - iconWidth);
-            return font.getSize(lines).addX(iconWidth);
+            return font.getSize(lines).add(iconWidth, 0);
         }
     }
 

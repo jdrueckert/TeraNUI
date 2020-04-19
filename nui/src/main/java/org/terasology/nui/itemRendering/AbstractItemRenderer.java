@@ -15,7 +15,7 @@
  */
 package org.terasology.nui.itemRendering;
 
-import org.terasology.math.geom.Rect2i;
+import org.joml.Rectanglei;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.SubRegion;
 
@@ -25,7 +25,7 @@ import org.terasology.nui.SubRegion;
 public abstract class AbstractItemRenderer<T> implements ItemRenderer<T> {
 
     @Override
-    public void draw(T value, Canvas canvas, Rect2i subregion) {
+    public void draw(T value, Canvas canvas, Rectanglei subregion) {
         try (SubRegion ignored = canvas.subRegion(subregion, false)) {
             draw(value, canvas);
         }

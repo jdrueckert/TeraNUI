@@ -17,10 +17,10 @@ package org.terasology.nui.layouts;
 
 import com.google.common.collect.Lists;
 import org.terasology.input.Keyboard;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2i;
-import org.terasology.math.geom.Vector2f;
+import org.joml.Rectanglei;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
+import org.joml.Vector2f;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
@@ -147,12 +147,12 @@ public class ZoomableLayout extends CoreLayout {
         Vector2f worldEnd = new Vector2f(widget.getPosition());
         worldEnd.add(widget.getSize());
         Vector2i screenEnd = worldToScreen(worldEnd);
-        canvas.drawWidget(widget, Rect2i.createFromMinAndMax(screenStart, screenEnd));
+        canvas.drawWidget(widget, new Rectanglei(screenStart, screenEnd));
     }
 
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
-        return Vector2i.zero();
+        return new Vector2i();
     }
 
     @Override
@@ -200,7 +200,7 @@ public class ZoomableLayout extends CoreLayout {
     }
 
     public Vector2i worldToScreen(Vector2f world) {
-        return new Vector2i(TeraMath.ceilToInt((world.x - windowPosition.x) * pixelSize.x), TeraMath.ceilToInt((world.y - windowPosition.y) * pixelSize.y));
+        return new Vector2i(NUIMathUtil.ceilToInt((world.x - windowPosition.x) * pixelSize.x), NUIMathUtil.ceilToInt((world.y - windowPosition.y) * pixelSize.y));
     }
 
     public void setWindowPosition(Vector2f pos) {

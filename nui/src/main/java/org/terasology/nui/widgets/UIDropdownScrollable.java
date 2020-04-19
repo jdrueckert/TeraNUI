@@ -17,9 +17,9 @@ package org.terasology.nui.widgets;
 
 import com.google.common.collect.Lists;
 import org.terasology.nui.itemRendering.ToStringTextRenderer;
-import org.terasology.math.geom.Border;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
@@ -30,6 +30,7 @@ import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseWheelEvent;
 import org.terasology.nui.itemRendering.ItemRenderer;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,10 +110,10 @@ public class UIDropdownScrollable<T> extends UIDropdown<T> {
             // Calculate total options height
             itemHeight = itemMargin.getTotalHeight() + font.getLineHeight();
             int height = (int) (itemHeight * optionsSize + canvas.getCurrentStyle().getBackgroundBorder().getTotalHeight());
-            canvas.addInteractionRegion(mainListener, Rect2i.createFromMinAndSize(0, 0, canvas.size().x, canvas.size().y + height));
+            canvas.addInteractionRegion(mainListener, RectUtility.createFromMinAndSize(0, 0, canvas.size().x, canvas.size().y + height));
 
             // Dropdown Background Frame
-            Rect2i frame = Rect2i.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height);
+            Rectanglei frame = RectUtility.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height);
             canvas.drawBackground(frame);
             canvas.setPart(LIST_ITEM);
 
@@ -137,7 +138,7 @@ public class UIDropdownScrollable<T> extends UIDropdown<T> {
     private void createNoScrollItems(Canvas canvas, Border itemMargin, int itemHeight) {
         for (int i = 0; i < optionListeners.size(); ++i) {
             readItemMouseOver(canvas, i);
-            Rect2i itemRegion = Rect2i.createFromMinAndSize(0, canvas.size().y + itemHeight * i, canvas.size().x, itemHeight);
+            Rectanglei itemRegion = RectUtility.createFromMinAndSize(0, canvas.size().y + itemHeight * i, canvas.size().x, itemHeight);
             drawItem(canvas, itemMargin, i, itemRegion);
         }
     }
@@ -152,19 +153,19 @@ public class UIDropdownScrollable<T> extends UIDropdown<T> {
      * @param height     Total menu height.
      * @param itemHeight Height per menu item.
      */
-    private void createScrollbarItems(Canvas canvas, Rect2i frame, Font font, Border itemMargin, int height, int itemHeight) {
+    private void createScrollbarItems(Canvas canvas, Rectanglei frame, Font font, Border itemMargin, int height, int itemHeight) {
         // Scrollable Area
-        Rect2i scrollableArea = Rect2i.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height - itemMargin.getBottom());
+        Rectanglei scrollableArea = RectUtility.createFromMinAndSize(0, canvas.size().y, canvas.size().x, height - itemMargin.getBottom());
 
         // Scrollbar Measurement
         int scrollbarWidth = canvas.calculateRestrictedSize(verticalBar, new Vector2i(canvas.size().x, canvas.size().y)).x;
-        int scrollbarHeight = frame.size().y - itemMargin.getTop();
-        int availableWidth = frame.size().x - scrollbarWidth;
+        int scrollbarHeight = frame.lengthY() - itemMargin.getTop();
+        int availableWidth = frame.lengthX() - scrollbarWidth;
         int scrollbarXPos = availableWidth - itemMargin.getRight();
         int scrollbarYPos = itemMargin.getTotalHeight() * 2 + font.getLineHeight();
 
         // Draw Scrollbar
-        Rect2i scrollbarRegion = Rect2i.createFromMinAndSize(scrollbarXPos, scrollbarYPos, scrollbarWidth, scrollbarHeight);
+        Rectanglei scrollbarRegion = RectUtility.createFromMinAndSize(scrollbarXPos, scrollbarYPos, scrollbarWidth, scrollbarHeight);
         canvas.drawWidget(verticalBar, scrollbarRegion);
 
         // Set the range of Scrollbar
@@ -173,7 +174,7 @@ public class UIDropdownScrollable<T> extends UIDropdown<T> {
 
         for (int i = 0; i < optionListeners.size(); ++i) {
             readItemMouseOver(canvas, i);
-            Rect2i itemRegion = Rect2i.createFromMinAndSize(0, itemHeight * i - verticalBar.getValue(), availableWidth, itemHeight);
+            Rectanglei itemRegion = RectUtility.createFromMinAndSize(0, itemHeight * i - verticalBar.getValue(), availableWidth, itemHeight);
 
             // If outside location, then hide
             try (SubRegion ignored = canvas.subRegion(scrollableArea, true)) {
@@ -210,7 +211,7 @@ public class UIDropdownScrollable<T> extends UIDropdown<T> {
      * @param i          Item index.
      * @param itemRegion Region of the item in the menu.
      */
-    private void drawItem(Canvas canvas, Border itemMargin, int i, Rect2i itemRegion) {
+    private void drawItem(Canvas canvas, Border itemMargin, int i, Rectanglei itemRegion) {
         canvas.drawBackground(itemRegion);
         optionRenderer.draw(options.get().get(i), canvas, itemMargin.shrink(itemRegion));
         canvas.addInteractionRegion(optionListeners.get(i), itemRegion);

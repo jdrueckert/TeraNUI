@@ -15,7 +15,7 @@
  */
 package org.terasology.nui;
 
-import org.terasology.math.geom.Rect2i;
+import org.joml.Rectanglei;
 
 /**
  */
@@ -63,8 +63,8 @@ public enum HorizontalAlign {
      * @param region
      * @return
      */
-    public int getStart(Rect2i region) {
-        return region.minX() + getOffset(0, region.width());
+    public int getStart(Rectanglei region) {
+        return region.minX + getOffset(0, region.lengthX());
     }
 
 }

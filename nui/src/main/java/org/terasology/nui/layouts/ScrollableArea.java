@@ -15,8 +15,8 @@
  */
 package org.terasology.nui.layouts;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
@@ -26,6 +26,7 @@ import org.terasology.nui.LayoutHint;
 import org.terasology.nui.SubRegion;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.events.NUIMouseWheelEvent;
+import org.terasology.nui.util.RectUtility;
 import org.terasology.nui.widgets.UIList;
 import org.terasology.nui.widgets.UIScrollbar;
 
@@ -248,8 +249,8 @@ public class ScrollableArea extends CoreLayout {
     private void drawWithJustVertical(Canvas canvas, Vector2i availableSize, Vector2i contentSize) {
         boolean atBottom = verticalBar.getRange() == verticalBar.getValue();
 
-        Rect2i contentRegion = Rect2i.createFromMinAndSize(Vector2i.zero(), availableSize);
-        verticalBar.setRange(contentSize.y - contentRegion.height());
+        Rectanglei contentRegion = RectUtility.createFromMinAndSize(new Vector2i(), availableSize);
+        verticalBar.setRange(contentSize.y - contentRegion.lengthY());
         if ((stickToBottom && atBottom) || moveToBottomPending) {
             verticalBar.setValue(verticalBar.getRange());
             moveToBottomPending = false;
@@ -262,12 +263,12 @@ public class ScrollableArea extends CoreLayout {
         canvas.addInteractionRegion(scrollListener);
         int scrollbarWidth = canvas.calculateRestrictedSize(verticalBar, availableSize).x;
         canvas.drawWidget(verticalBar,
-                Rect2i.createFromMinAndSize(
+                RectUtility.createFromMinAndSize(
                         new Vector2i(availableSize.x, 0),
                         new Vector2i(scrollbarWidth, availableSize.y)));
 
         try (SubRegion ignored = canvas.subRegion(contentRegion, true)) {
-            canvas.drawWidget(content, Rect2i.createFromMinAndSize(0, -verticalBar.getValue(), availableSize.x, contentSize.y));
+            canvas.drawWidget(content, RectUtility.createFromMinAndSize(0, -verticalBar.getValue(), availableSize.x, contentSize.y));
         }
     }
 
@@ -281,18 +282,18 @@ public class ScrollableArea extends CoreLayout {
      * @param contentSize   The size of the widget to draw
      */
     private void drawWithJustHorizontal(Canvas canvas, Vector2i availableSize, Vector2i contentSize) {
-        Rect2i contentRegion = Rect2i.createFromMinAndSize(Vector2i.zero(), availableSize);
+        Rectanglei contentRegion = RectUtility.createFromMinAndSize(new Vector2i(), availableSize);
 
         canvas.addInteractionRegion(scrollListener);
-        horizontalBar.setRange(contentSize.x - contentRegion.width());
+        horizontalBar.setRange(contentSize.x - contentRegion.lengthX());
         int scrollbarHeight = canvas.calculateRestrictedSize(verticalBar, availableSize).y;
         canvas.drawWidget(horizontalBar,
-                Rect2i.createFromMinAndSize(
+                RectUtility.createFromMinAndSize(
                         new Vector2i(0, availableSize.y),
                         new Vector2i(availableSize.x, scrollbarHeight)));
 
         try (SubRegion ignored = canvas.subRegion(contentRegion, true)) {
-            canvas.drawWidget(content, Rect2i.createFromMinAndSize(-horizontalBar.getValue(), 0, contentSize.x, availableSize.y));
+            canvas.drawWidget(content, RectUtility.createFromMinAndSize(-horizontalBar.getValue(), 0, contentSize.x, availableSize.y));
         }
     }
 
@@ -308,10 +309,10 @@ public class ScrollableArea extends CoreLayout {
                               Vector2i contentSize) {
         boolean atBottom = verticalBar.getRange() == verticalBar.getValue();
 
-        Rect2i contentRegion = Rect2i.createFromMinAndSize(Vector2i.zero(), availableSize);
+        Rectanglei contentRegion = RectUtility.createFromMinAndSize(new Vector2i(), availableSize);
 
-        verticalBar.setRange(contentSize.y - contentRegion.height());
-        horizontalBar.setRange(contentSize.x - contentRegion.width());
+        verticalBar.setRange(contentSize.y - contentRegion.lengthY());
+        horizontalBar.setRange(contentSize.x - contentRegion.lengthX());
         if ((stickToBottom && atBottom) || moveToBottomPending) {
             verticalBar.setValue(verticalBar.getRange());
             moveToBottomPending = false;
@@ -323,16 +324,16 @@ public class ScrollableArea extends CoreLayout {
 
         canvas.addInteractionRegion(scrollListener);
         canvas.drawWidget(verticalBar,
-                Rect2i.createFromMinAndSize(
+                RectUtility.createFromMinAndSize(
                         new Vector2i(availableSize.x, 0),
                         canvas.calculateRestrictedSize(verticalBar, availableSize)));
         canvas.drawWidget(horizontalBar,
-                Rect2i.createFromMinAndSize(
+                RectUtility.createFromMinAndSize(
                         new Vector2i(0, availableSize.y),
                         canvas.calculateRestrictedSize(horizontalBar, availableSize)));
 
         try (SubRegion ignored = canvas.subRegion(contentRegion, true)) {
-            canvas.drawWidget(content, Rect2i.createFromMinAndSize(-horizontalBar.getValue(), -verticalBar.getValue(), contentSize.x, contentSize.y));
+            canvas.drawWidget(content, RectUtility.createFromMinAndSize(-horizontalBar.getValue(), -verticalBar.getValue(), contentSize.x, contentSize.y));
         }
     }
 
@@ -345,7 +346,7 @@ public class ScrollableArea extends CoreLayout {
      * @param availableSize The available size for the layout
      */
     private void drawWithNeither(Canvas canvas, Vector2i availableSize) {
-        canvas.drawWidget(content, Rect2i.createFromMinAndSize(Vector2i.zero(), availableSize));
+        canvas.drawWidget(content, RectUtility.createFromMinAndSize(new Vector2i(), availableSize));
     }
 
 

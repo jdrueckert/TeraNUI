@@ -16,9 +16,9 @@
 package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -29,6 +29,7 @@ import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.util.RectUtility;
 
 /**
  * A simple scrollbar
@@ -99,7 +100,7 @@ public class UIScrollbar extends CoreWidget {
                 updatePosition(pixelPosition);
 
                 if (sliderSize > 0) {
-                    int clamped = TeraMath.clamp(pixelPosition, 0, sliderSize);
+                    int clamped = NUIMathUtil.clamp(pixelPosition, 0, sliderSize);
                     setValue(clamped * getRange() / sliderSize);
                 } else {
                     setValue(0);
@@ -158,13 +159,13 @@ public class UIScrollbar extends CoreWidget {
 
         if (sliderSize > handleSize) {
             int drawLocation = pixelOffsetFor(getValue());
-            Rect2i handleRegion;
+            Rectanglei handleRegion;
             if (vertical) {
                 handleSize = canvas.getCurrentStyle().getFixedHeight();
-                handleRegion = Rect2i.createFromMinAndSize(0, drawLocation, canvas.getCurrentStyle().getFixedWidth(), handleSize);
+                handleRegion = RectUtility.createFromMinAndSize(0, drawLocation, canvas.getCurrentStyle().getFixedWidth(), handleSize);
             } else {
                 handleSize = canvas.getCurrentStyle().getFixedWidth();
-                handleRegion = Rect2i.createFromMinAndSize(drawLocation, 0, handleSize, canvas.getCurrentStyle().getFixedHeight());
+                handleRegion = RectUtility.createFromMinAndSize(drawLocation, 0, handleSize, canvas.getCurrentStyle().getFixedHeight());
             }
             canvas.drawBackground(handleRegion);
             canvas.addInteractionRegion(handleListener, handleRegion);
@@ -244,7 +245,7 @@ public class UIScrollbar extends CoreWidget {
      * @return The current scroll value.
      */
     public int getValue() {
-        return TeraMath.clamp(value.get(), getMinimum(), getMinimum() + getRange());
+        return NUIMathUtil.clamp(value.get(), getMinimum(), getMinimum() + getRange());
     }
 
     /**
@@ -255,7 +256,7 @@ public class UIScrollbar extends CoreWidget {
     }
 
     private void updatePosition(int pixelPos) {
-        int newPosition = TeraMath.clamp(pixelPos, 0, sliderSize);
+        int newPosition = NUIMathUtil.clamp(pixelPos, 0, sliderSize);
         setValue((sliderSize > 0) ? (newPosition * getRange() / sliderSize) : 0);
     }
 

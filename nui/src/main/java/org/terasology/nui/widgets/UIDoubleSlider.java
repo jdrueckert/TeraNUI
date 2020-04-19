@@ -16,9 +16,9 @@
 package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -30,6 +30,7 @@ import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.util.RectUtility;
 
 /**
  * A simple slider bar with two handles
@@ -76,11 +77,11 @@ public class UIDoubleSlider extends CoreWidget {
         public void onMouseDrag(NUIMouseDragEvent event) {
             if (sliderWidth > 0) {
                 Vector2i pos = event.getRelativeMousePosition();
-                int maxSlot = TeraMath.floorToInt(getRange() / getIncrement());
+                int maxSlot = NUIMathUtil.floorToInt(getRange() / getIncrement());
                 int slotWidth = sliderWidth / maxSlot;
                 int nearestSlot = maxSlot * (pos.x - offset.x + slotWidth / 2) / sliderWidth;
-                nearestSlot = TeraMath.clamp(nearestSlot, 0, maxSlot);
-                float newValue = TeraMath.clamp(getIncrement() * nearestSlot, 0, getRange()) + getMinimum();
+                nearestSlot = NUIMathUtil.clamp(nearestSlot, 0, maxSlot);
+                float newValue = NUIMathUtil.clamp(getIncrement() * nearestSlot, 0, getRange()) + getMinimum();
                 setValueLeft(newValue);
             }
         }
@@ -108,11 +109,11 @@ public class UIDoubleSlider extends CoreWidget {
         public void onMouseDrag(NUIMouseDragEvent event) {
             if (sliderWidth > 0) {
                 Vector2i pos = event.getRelativeMousePosition();
-                int maxSlot = TeraMath.floorToInt(getRange() / getIncrement());
+                int maxSlot = NUIMathUtil.floorToInt(getRange() / getIncrement());
                 int slotWidth = sliderWidth / maxSlot;
                 int nearestSlot = maxSlot * (pos.x - offset.x + slotWidth / 2) / sliderWidth;
-                nearestSlot = TeraMath.clamp(nearestSlot, 0, maxSlot);
-                float newValue = TeraMath.clamp(getIncrement() * nearestSlot, 0, getRange()) + getMinimum();
+                nearestSlot = NUIMathUtil.clamp(nearestSlot, 0, maxSlot);
+                float newValue = NUIMathUtil.clamp(getIncrement() * nearestSlot, 0, getRange()) + getMinimum();
                 setValueRight(newValue);
             }
         }
@@ -145,7 +146,7 @@ public class UIDoubleSlider extends CoreWidget {
         if (rightTicker) {
             drawLocation += tickerWidth;
         }
-        Rect2i tickerRegion = Rect2i.createFromMinAndSize(drawLocation, 0, tickerWidth, canvas.size().y);
+        Rectanglei tickerRegion = RectUtility.createFromMinAndSize(drawLocation, 0, tickerWidth, canvas.size().y);
         try (SubRegion ignored = canvas.subRegion(tickerRegion, false)) {
             canvas.drawBackground();
             canvas.drawText(display);
@@ -347,7 +348,7 @@ public class UIDoubleSlider extends CoreWidget {
     }
 
     private int pixelOffsetFor(float val, int width) {
-        return TeraMath.floorToInt(width * (val - getMinimum()) / getRange());
+        return NUIMathUtil.floorToInt(width * (val - getMinimum()) / getRange());
     }
 
 }

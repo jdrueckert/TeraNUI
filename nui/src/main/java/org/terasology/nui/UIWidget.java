@@ -16,7 +16,7 @@
 package org.terasology.nui;
 
 import org.terasology.nui.events.NUIBindButtonEvent;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.events.NUIKeyEvent;
 import org.terasology.nui.events.NUIMouseButtonEvent;

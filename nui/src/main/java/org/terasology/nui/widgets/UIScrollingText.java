@@ -15,8 +15,8 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -24,6 +24,7 @@ import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.TextLineBuilder;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.databinding.DefaultBinding;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -206,7 +207,7 @@ public class UIScrollingText extends CoreWidget {
             //ignores offsets
             if (y >= -offsetTop && y <= canvas.size().y - offsetBottom + font.getHeight(entry.getKey())) {
                 String line = entry.getKey();
-                Rect2i coords = Rect2i.createFromMinAndSize(w - font.getWidth(line) / 2, y, font.getWidth(line), font.getHeight(line));
+                Rectanglei coords = RectUtility.createFromMinAndSize(w - font.getWidth(line) / 2, y, font.getWidth(line), font.getHeight(line));
                 canvas.drawText(entry.getKey(), coords);
             }
             if (y >= -offsetTop) {

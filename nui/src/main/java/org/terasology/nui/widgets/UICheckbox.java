@@ -16,7 +16,7 @@
 package org.terasology.nui.widgets;
 
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.ActivatableWidget;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
@@ -103,7 +103,7 @@ public class UICheckbox extends ActivatableWidget {
 
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
-        return Vector2i.zero();
+        return new Vector2i();
     }
 
     /**

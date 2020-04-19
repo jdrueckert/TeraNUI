@@ -15,8 +15,9 @@
  */
 package org.terasology.nui.canvas;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.Objects;
 
@@ -29,25 +30,40 @@ public final class Line {
 
     }
 
-    public static LineCoordinates getLineCoordinates(int startX, int startY, int endX, int endY, Rect2i baseRegion, Rect2i cropRegion) {
-        Rect2i region = Rect2i.createFromMinAndMax(Math.min(startX, endX), Math.min(startY, endY),
+    public static LineCoordinates getLineCoordinates(int startX, int startY, int endX, int endY, Rectanglei baseRegion, Rectanglei cropRegion) {
+        Rectanglei region = new Rectanglei(Math.min(startX, endX), Math.min(startY, endY),
             Math.max(startX, endX), Math.max(startY, endY));
-        Rect2i absoluteRegion = relativeToAbsolute(region, baseRegion);
-        Rect2i finalRegion = cropRegion.intersect(absoluteRegion);
+        Rectanglei absoluteRegion = relativeToAbsolute(region, baseRegion);
+        Rectanglei finalRegion = intersect(cropRegion, absoluteRegion);
 
-        if (!finalRegion.isEmpty()) {
-            int sx = startX > endX ? finalRegion.maxX() : finalRegion.minX();
-            int sy = startY > endY ? finalRegion.maxY() : finalRegion.minY();
-            int ex = startX > endX ? finalRegion.minX() : finalRegion.maxX();
-            int ey = startY > endY ? finalRegion.minY() : finalRegion.maxY();
+        // Check for valid rectangle (JOML's built-in method does not accept a width/height of 0)
+        if (finalRegion.minX <= finalRegion.maxX && finalRegion.minY <= finalRegion.maxY) {
+            int sx = startX > endX ? finalRegion.maxX : finalRegion.minX;
+            int sy = startY > endY ? finalRegion.maxY : finalRegion.minY;
+            int ex = startX > endX ? finalRegion.minX : finalRegion.maxX;
+            int ey = startY > endY ? finalRegion.minY : finalRegion.maxY;
             return new LineCoordinates(new Vector2i(sx, sy), new Vector2i(ex, ey));
         } else {
             return null;
         }
     }
 
-    public static Rect2i relativeToAbsolute(Rect2i region, Rect2i baseRegion) {
-        return Rect2i.createFromMinAndSize(region.minX() + baseRegion.minX(), region.minY() + baseRegion.minY(), region.width(), region.height());
+    /**
+     * JOML considers Rectangles with a width or height of 0 to be invalid.
+     * Lines can have either value as 0 but not both, so the method needs to be redefined without that restriction
+     */
+    private static Rectanglei intersect(Rectanglei a, Rectanglei b) {
+        Rectanglei result = new Rectanglei();
+        result.minX = Math.max(a.minX, b.minX);
+        result.minY = Math.max(a.minY, b.minY);
+        result.maxX = Math.min(a.maxX, b.maxX);
+        result.maxY = Math.min(a.maxY, b.maxY);
+
+        return result;
+    }
+
+    public static Rectanglei relativeToAbsolute(Rectanglei region, Rectanglei baseRegion) {
+        return RectUtility.createFromMinAndSize(region.minX + baseRegion.minX, region.minY + baseRegion.minY, region.lengthX(), region.lengthY());
     }
 
     /**

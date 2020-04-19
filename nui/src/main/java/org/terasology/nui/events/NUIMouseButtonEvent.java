@@ -17,7 +17,7 @@ package org.terasology.nui.events;
 
 import org.terasology.input.ButtonState;
 import org.terasology.input.MouseInput;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 
 public class NUIMouseButtonEvent extends NUIMouseEvent {
     private MouseInput button;

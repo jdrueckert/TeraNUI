@@ -15,7 +15,7 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.math.geom.Vector2i;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
 import org.terasology.nui.LayoutConfig;
@@ -47,7 +47,7 @@ public class UIBox extends CoreWidget {
         if (content != null) {
             return canvas.calculateRestrictedSize(content, sizeHint);
         }
-        return Vector2i.zero();
+        return new Vector2i();
     }
 
     @Override

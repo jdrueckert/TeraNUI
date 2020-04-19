@@ -18,13 +18,14 @@ package org.terasology.nui.widgets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
 import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.layouts.RowLayout;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,9 +55,9 @@ public class UITabBox extends CoreWidget {
     @Override
     public void onDraw(Canvas canvas) {
         if (!contents.isEmpty()) {
-            Rect2i region = canvas.getRegion();
-            Rect2i buttonRegion = Rect2i.createFromMinAndSize(region.minX(), region.minY(), region.width(), tabBarHeight);
-            Rect2i boxRegion = Rect2i.createFromMinAndMax(region.minX(), region.minY() + tabBarHeight, region.width(), region.height());
+            Rectanglei region = canvas.getRegion();
+            Rectanglei buttonRegion = RectUtility.createFromMinAndSize(region.minX, region.minY, region.lengthX(), tabBarHeight);
+            Rectanglei boxRegion = new Rectanglei(region.minX, region.minY + tabBarHeight, region.lengthX(), region.lengthY());
             canvas.drawWidget(contents.get(currentTab), boxRegion);
             canvas.drawWidget(buttonLayout, buttonRegion);
         }
@@ -67,7 +68,7 @@ public class UITabBox extends CoreWidget {
         if (!contents.isEmpty()) {
             return canvas.calculateRestrictedSize(contents.get(currentTab), sizeHint);
         }
-        return Vector2i.zero();
+        return new Vector2i();
     }
 
     @Override

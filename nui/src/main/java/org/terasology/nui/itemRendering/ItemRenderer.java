@@ -15,8 +15,8 @@
  */
 package org.terasology.nui.itemRendering;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 
 /**
@@ -31,7 +31,7 @@ public interface ItemRenderer<T> {
      */
     void draw(T value, Canvas canvas);
 
-    void draw(T value, Canvas canvas, Rect2i subregion);
+    void draw(T value, Canvas canvas, Rectanglei subregion);
 
     Vector2i getPreferredSize(T value, Canvas canvas);
 

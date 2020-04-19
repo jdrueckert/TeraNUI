@@ -15,9 +15,9 @@
  */
 package org.terasology.nui.canvas;
 
-import org.terasology.math.geom.Border;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.Color;
@@ -35,14 +35,14 @@ public interface CanvasRenderer {
 
     Vector2i getTargetSize();
 
-    void crop(Rect2i cropRegion);
+    void crop(Rectanglei cropRegion);
 
     void drawLine(int sx, int sy, int ex, int ey, Color color);
 
-    void drawTexture(UITextureRegion texture, Color color, ScaleMode mode, Rect2i absoluteRegion, float ux, float uy, float uw, float uh, float alpha);
+    void drawTexture(UITextureRegion texture, Color color, ScaleMode mode, Rectanglei absoluteRegion, float ux, float uy, float uw, float uh, float alpha);
 
-    void drawText(String text, Font font, HorizontalAlign hAlign, VerticalAlign vAlign, Rect2i absoluteRegion, Color color,
+    void drawText(String text, Font font, HorizontalAlign hAlign, VerticalAlign vAlign, Rectanglei absoluteRegion, Color color,
                   Color shadowColor, float alpha, boolean underlined);
 
-    void drawTextureBordered(UITextureRegion texture, Rect2i absoluteRegion, Border border, boolean tile, float ux, float uy, float uw, float uh, float alpha);
+    void drawTextureBordered(UITextureRegion texture, Rectanglei absoluteRegion, Border border, boolean tile, float ux, float uy, float uw, float uh, float alpha);
 }

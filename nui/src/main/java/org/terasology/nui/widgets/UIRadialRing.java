@@ -17,8 +17,8 @@ package org.terasology.nui.widgets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.BaseInteractionListener;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -27,6 +27,7 @@ import org.terasology.nui.events.NUIMouseClickEvent;
 import org.terasology.nui.events.NUIMouseDragEvent;
 import org.terasology.nui.events.NUIMouseOverEvent;
 import org.terasology.nui.events.NUIMouseReleaseEvent;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,26 +96,26 @@ public class UIRadialRing extends CoreWidget {
 
     private void initialise(Canvas canvas) {
         final double circleToSquare = 0.707106781;
-        Rect2i region = canvas.getRegion();
+        Rectanglei region = canvas.getRegion();
 
-        int sectionWidth = region.width() / 4;
+        int sectionWidth = region.lengthX() / 4;
         double offset = sectionWidth * 1.5;
         radius = sectionWidth * 2;
         sectionAngle = (Math.PI * 2) / sections.size();
         int infoSquareSize = (int) (radius * circleToSquare);
         int sectionSquareSize = (int) (sectionWidth * circleToSquare);
-        Rect2i infoRegion = Rect2i.createFromMinAndSize(
+        Rectanglei infoRegion = RectUtility.createFromMinAndSize(
                 sectionWidth + infoSquareSize / 4,
                 sectionWidth + infoSquareSize / 4,
                 infoSquareSize,
                 infoSquareSize);
 
         for (int i = 0; i < sections.size(); i++) {
-            sections.get(i).setDrawRegion(Rect2i.createFromMinAndSize(
+            sections.get(i).setDrawRegion(RectUtility.createFromMinAndSize(
                     (int) (Math.cos(i * sectionAngle + sectionAngle / 2) * offset + sectionWidth * 1.5),
                     (int) (Math.sin(i * sectionAngle + sectionAngle / 2) * offset + sectionWidth * 1.5),
                     sectionWidth, sectionWidth));
-            sections.get(i).setInnerRegion(Rect2i.createFromMinAndSize(
+            sections.get(i).setInnerRegion(RectUtility.createFromMinAndSize(
                     (int) (Math.cos(i * sectionAngle + sectionAngle / 2) * offset + sectionWidth * 1.5 + sectionSquareSize / 4),
                     (int) (Math.sin(i * sectionAngle + sectionAngle / 2) * offset + sectionWidth * 1.5 + sectionSquareSize / 4),
                     sectionSquareSize, sectionSquareSize));
@@ -167,7 +168,7 @@ public class UIRadialRing extends CoreWidget {
 
     @Override
     public Vector2i getPreferredContentSize(Canvas canvas, Vector2i sizeHint) {
-        return canvas.getRegion().size();
+        return new Vector2i(canvas.getRegion().lengthX(), canvas.getRegion().lengthY());
     }
 
 

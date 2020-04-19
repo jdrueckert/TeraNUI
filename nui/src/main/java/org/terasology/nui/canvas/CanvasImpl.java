@@ -24,10 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.terasology.input.MouseInput;
 import org.terasology.input.device.KeyboardDevice;
 import org.terasology.input.device.MouseDevice;
-import org.terasology.math.geom.Border;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.terasology.nui.Border;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.FocusManager;
 import org.terasology.nui.asset.font.Font;
 import org.terasology.nui.UITextureRegion;
@@ -48,6 +48,7 @@ import org.terasology.nui.events.NUIMouseReleaseEvent;
 import org.terasology.nui.events.NUIMouseWheelEvent;
 import org.terasology.nui.skin.UISkin;
 import org.terasology.nui.skin.UIStyle;
+import org.terasology.nui.util.RectUtility;
 import org.terasology.nui.widgets.UILabel;
 import org.terasology.nui.widgets.UITooltip;
 
@@ -142,7 +143,7 @@ public class CanvasImpl implements CanvasControl {
         size.x = (int) (size.x / uiScale);
         size.y = (int) (size.y / uiScale);
 
-        state = new CanvasState(null, Rect2i.createFromMinAndSize(0, 0, size.x, size.y));
+        state = new CanvasState(null, RectUtility.createFromMinAndSize(0, 0, size.x, size.y));
         renderer.preRender();
         renderer.crop(state.cropRegion);
         focusDrawn = false;
@@ -179,7 +180,10 @@ public class CanvasImpl implements CanvasControl {
         Iterator<InteractionRegion> iter = interactionRegions.descendingIterator();
         while (iter.hasNext()) {
             InteractionRegion next = iter.next();
-            if (next.region.contains(position)) {
+            // HACK: There's a bug in JOML where the contains method uses the following faulty logic:
+            // (x >= minX && y >= minX && x < maxX && y < maxY) - it should be y >= minY
+            // So use a work-around method instead
+            if (RectUtility.contains(next.region, position)) {
                 Vector2i relPos = new Vector2i(position);
                 relPos.sub(next.offset);
                 boolean isTopMostElement = newMouseOverRegions.isEmpty();
@@ -226,7 +230,8 @@ public class CanvasImpl implements CanvasControl {
         lastClickTime = getGameTimeInMs();
 
         for (InteractionRegion next : mouseOverRegions) {
-            if (next.region.contains(pos)) {
+            // HACK: There's a bug in JOML where the contains method uses the following faulty logic
+            if (RectUtility.contains(next.region, pos)) {
                 Vector2i relPos = new Vector2i(pos);
                 relPos.sub(next.offset);
                 if (possibleDoubleClick && focusManager.getFocus() == next.element) {
@@ -256,7 +261,7 @@ public class CanvasImpl implements CanvasControl {
     public boolean processMouseRelease(MouseInput button, Vector2i pos) {
         if (clickedRegion != null) {
             Vector2i relPos = new Vector2i(pos);
-            relPos.sub(clickedRegion.region.min());
+            relPos.sub(clickedRegion.region.lengths(new Vector2i()));
             clickedRegion.listener.onMouseRelease(new NUIMouseReleaseEvent(mouse, keyboard, relPos, button));
             clickedRegion = null;
             return true;
@@ -267,9 +272,9 @@ public class CanvasImpl implements CanvasControl {
     @Override
     public boolean processMouseWheel(int wheelTurns, Vector2i pos) {
         for (InteractionRegion next : mouseOverRegions) {
-            if (next.region.contains(pos)) {
+            if (RectUtility.contains(next.region, pos)) {
                 Vector2i relPos = new Vector2i(pos);
-                relPos.sub(next.region.min());
+                relPos.sub(new Vector2i(next.region.minX, next.region.minY));
                 if (next.listener.onMouseWheel(new NUIMouseWheelEvent(mouse, keyboard, relPos, wheelTurns))) {
                     clickedRegion = next;
                     focusManager.setFocus(next.element);
@@ -281,7 +286,7 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public SubRegion subRegion(Rect2i region, boolean crop) {
+    public SubRegion subRegion(Rectanglei region, boolean crop) {
         return new SubRegionImpl(region, crop);
     }
 
@@ -292,12 +297,12 @@ public class CanvasImpl implements CanvasControl {
 
     @Override
     public Vector2i size() {
-        return new Vector2i(state.drawRegion.width(), state.drawRegion.height());
+        return new Vector2i(state.drawRegion.lengthX(), state.drawRegion.lengthY());
     }
 
     @Override
-    public Rect2i getRegion() {
-        return Rect2i.createFromMinAndSize(0, 0, state.drawRegion.width(), state.drawRegion.height());
+    public Rectanglei getRegion() {
+        return RectUtility.createFromMinAndSize(0, 0, state.drawRegion.lengthX(), state.drawRegion.lengthY());
     }
 
     @Override
@@ -350,7 +355,7 @@ public class CanvasImpl implements CanvasControl {
         String family = (widget.getFamily() != null) ? widget.getFamily() : state.family;
         UISkin skin = (widget.getSkin() != null) ? widget.getSkin() : state.skin;
         UIStyle elementStyle = skin.getStyleFor(family, widget.getClass(), UIWidget.BASE_PART, widget.getMode());
-        Rect2i region = applyStyleToSize(Rect2i.createFromMinAndSize(Vector2i.zero(), sizeRestrictions), elementStyle);
+        Rectanglei region = applyStyleToSize(RectUtility.createFromMinAndSize(new Vector2i(), sizeRestrictions), elementStyle);
         try (SubRegion ignored = subRegionForWidget(widget, region, false)) {
             Vector2i preferredSize = widget.getPreferredContentSize(this, elementStyle.getMargin().shrink(sizeRestrictions));
             preferredSize = elementStyle.getMargin().grow(preferredSize);
@@ -377,7 +382,7 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawWidget(UIWidget element, Rect2i region) {
+    public void drawWidget(UIWidget element, Rectanglei region) {
         if (element == null || !element.isVisible()) {
             return;
         }
@@ -388,7 +393,7 @@ public class CanvasImpl implements CanvasControl {
         String family = (element.getFamily() != null) ? element.getFamily() : state.family;
         UISkin skin = (element.getSkin() != null) ? element.getSkin() : state.skin;
         UIStyle newStyle = skin.getStyleFor(family, element.getClass(), UIWidget.BASE_PART, element.getMode());
-        Rect2i regionArea;
+        Rectanglei regionArea;
         try (SubRegion ignored = subRegionForWidget(element, region, false)) {
             regionArea = applyStyleToSize(region, newStyle, calculateMaximumSize(element));
         }
@@ -396,7 +401,7 @@ public class CanvasImpl implements CanvasControl {
         try (SubRegion ignored = subRegionForWidget(element, regionArea, false)) {
             if (element.isSkinAppliedByCanvas()) {
                 drawBackground();
-                try (SubRegion withMargin = subRegionForWidget(element, newStyle.getMargin().shrink(Rect2i.createFromMinAndSize(Vector2i.zero(), regionArea.size())), false)) {
+                try (SubRegion withMargin = subRegionForWidget(element, newStyle.getMargin().shrink(RectUtility.createFromMinAndSize(new Vector2i(), regionArea.lengths(new Vector2i()))), false)) {
                     drawStyledWidget(element);
                 }
             } else {
@@ -414,7 +419,7 @@ public class CanvasImpl implements CanvasControl {
         element.onDraw(this);
     }
 
-    protected SubRegion subRegionForWidget(UIWidget widget, Rect2i region, boolean crop) {
+    protected SubRegion subRegionForWidget(UIWidget widget, Rectanglei region, boolean crop) {
         SubRegion result = subRegion(region, crop);
         state.element = widget;
         if (widget.getSkin() != null) {
@@ -434,7 +439,7 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawText(String text, Rect2i region) {
+    public void drawText(String text, Rectanglei region) {
         UIStyle style = getCurrentStyle();
         if (style.isTextShadowed()) {
             drawTextRawShadowed(text, style.getFont(), style.getTextColor(), style.getTextShadowColor(), style.isTextUnderlined(), region, style.getHorizontalTextAlignment(),
@@ -455,37 +460,37 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawTexture(UITextureRegion texture, Rect2i region) {
+    public void drawTexture(UITextureRegion texture, Rectanglei region) {
         drawTextureRaw(texture, region, getCurrentStyle().getTextureScaleMode());
     }
 
     @Override
-    public void drawTexture(UITextureRegion texture, Rect2i region, Color color) {
+    public void drawTexture(UITextureRegion texture, Rectanglei region, Color color) {
         drawTextureRaw(texture, region, color, getCurrentStyle().getTextureScaleMode());
     }
 
     @Override
     public void drawBackground() {
-        Rect2i region = applyStyleToSize(getRegion());
+        Rectanglei region = applyStyleToSize(getRegion());
         drawBackground(region);
     }
 
-    protected Rect2i applyStyleToSize(Rect2i region) {
+    protected Rectanglei applyStyleToSize(Rectanglei region) {
         return applyStyleToSize(region, getCurrentStyle());
     }
 
-    protected Rect2i applyStyleToSize(Rect2i region, UIStyle style, Vector2i maxSize) {
-        if (region.isEmpty()) {
+    protected Rectanglei applyStyleToSize(Rectanglei region, UIStyle style, Vector2i maxSize) {
+        if (!region.isValid()) {
             return region;
         }
-        Vector2i size = applyStyleToSize(region.size(), style);
+        Vector2i size = applyStyleToSize(region.lengths(new Vector2i()), style);
         size.x = Math.min(size.x, maxSize.x);
         size.y = Math.min(size.y, maxSize.y);
 
-        int minX = region.minX() + style.getHorizontalAlignment().getOffset(size.x, region.width());
-        int minY = region.minY() + style.getVerticalAlignment().getOffset(size.y, region.height());
+        int minX = region.minX + style.getHorizontalAlignment().getOffset(size.x, region.lengthX());
+        int minY = region.minY + style.getVerticalAlignment().getOffset(size.y, region.lengthY());
 
-        return Rect2i.createFromMinAndSize(minX, minY, size.x, size.y);
+        return RectUtility.createFromMinAndSize(minX, minY, size.x, size.y);
     }
 
     protected Vector2i applyStyleToSize(Vector2i size, UIStyle style) {
@@ -493,33 +498,33 @@ public class CanvasImpl implements CanvasControl {
         if (style.getFixedWidth() != 0) {
             result.x = style.getFixedWidth();
         } else {
-            result.x = TeraMath.clamp(result.x, style.getMinWidth(), style.getMaxWidth());
+            result.x = NUIMathUtil.clamp(result.x, style.getMinWidth(), style.getMaxWidth());
         }
 
         if (style.getFixedHeight() != 0) {
             result.y = style.getFixedHeight();
         } else {
-            result.y = TeraMath.clamp(result.y, style.getMinHeight(), style.getMaxHeight());
+            result.y = NUIMathUtil.clamp(result.y, style.getMinHeight(), style.getMaxHeight());
         }
 
         return result;
     }
 
-    protected Rect2i applyStyleToSize(Rect2i region, UIStyle style) {
-        if (region.isEmpty()) {
+    protected Rectanglei applyStyleToSize(Rectanglei region, UIStyle style) {
+        if (!region.isValid()) {
             return region;
         }
-        Vector2i size = applyStyleToSize(region.size(), style);
+        Vector2i size = applyStyleToSize(region.lengths(new Vector2i()), style);
 
-        int minX = region.minX() + style.getHorizontalAlignment().getOffset(size.x, region.width());
-        int minY = region.minY() + style.getVerticalAlignment().getOffset(size.y, region.height());
+        int minX = region.minX + style.getHorizontalAlignment().getOffset(size.x, region.lengthX());
+        int minY = region.minY + style.getVerticalAlignment().getOffset(size.y, region.lengthY());
 
-        return Rect2i.createFromMinAndSize(minX, minY, size.x, size.y);
+        return RectUtility.createFromMinAndSize(minX, minY, size.x, size.y);
     }
 
     @Override
-    public void drawBackground(Rect2i region) {
-        if (region.isEmpty()) {
+    public void drawBackground(Rectanglei region) {
+        if (!region.isValid()) {
             return;
         }
         UIStyle style = getCurrentStyle();
@@ -538,17 +543,17 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawTextRaw(String text, Font font, Color color, Rect2i region) {
+    public void drawTextRaw(String text, Font font, Color color, Rectanglei region) {
         drawTextRawShadowed(text, font, color, Color.TRANSPARENT, region);
     }
 
     @Override
-    public void drawTextRaw(String text, Font font, Color color, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign) {
+    public void drawTextRaw(String text, Font font, Color color, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign) {
         drawTextRawShadowed(text, font, color, Color.TRANSPARENT, region, hAlign, vAlign);
     }
 
     @Override
-    public void drawTextRaw(String text, Font font, Color color, boolean underlined, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign) {
+    public void drawTextRaw(String text, Font font, Color color, boolean underlined, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign) {
         drawTextRawShadowed(text, font, color, Color.TRANSPARENT, underlined, region, hAlign, vAlign);
     }
 
@@ -558,20 +563,20 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rect2i region) {
+    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rectanglei region) {
         drawTextRawShadowed(text, font, color, shadowColor, region, HorizontalAlign.LEFT, VerticalAlign.TOP);
     }
 
     @Override
-    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign) {
+    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign) {
         drawTextRawShadowed(text, font, color, shadowColor, false, region, hAlign, vAlign);
     }
 
     @Override
-    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, boolean underline, Rect2i region, HorizontalAlign hAlign, VerticalAlign vAlign) {
-        Rect2i absoluteRegion = relativeToAbsolute(region);
-        Rect2i cropRegion = absoluteRegion.intersect(state.cropRegion);
-        if (!cropRegion.isEmpty()) {
+    public void drawTextRawShadowed(String text, Font font, Color color, Color shadowColor, boolean underline, Rectanglei region, HorizontalAlign hAlign, VerticalAlign vAlign) {
+        Rectanglei absoluteRegion = relativeToAbsolute(region);
+        Rectanglei cropRegion = absoluteRegion.intersection(state.cropRegion, new Rectanglei());
+        if (cropRegion.isValid()) {
             if (state.drawOnTop) {
                 drawOnTopOperations.add(new DrawTextOperation(text, font, hAlign, vAlign, absoluteRegion, cropRegion, color, shadowColor, state.getAlpha(), underline));
             } else {
@@ -581,35 +586,35 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode) {
+    public void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode) {
         drawTextureRaw(texture, region, mode, 0f, 0f, 1f, 1f);
     }
 
     @Override
-    public void drawTextureRaw(UITextureRegion texture, Rect2i region, Color color, ScaleMode mode) {
+    public void drawTextureRaw(UITextureRegion texture, Rectanglei region, Color color, ScaleMode mode) {
         drawTextureRaw(texture, region, color, mode, 0f, 0f, 1f, 1f);
     }
 
     @Override
-    public void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode, int ux, int uy, int uw, int uh) {
+    public void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode, int ux, int uy, int uw, int uh) {
         drawTextureRaw(texture, region, mode,
             (float) ux / texture.getWidth(), (float) uy / texture.getHeight(),
             (float) uw / texture.getWidth(), (float) uh / texture.getHeight());
     }
 
     @Override
-    public void drawTextureRaw(UITextureRegion texture, Rect2i region, ScaleMode mode, float ux, float uy, float uw, float uh) {
+    public void drawTextureRaw(UITextureRegion texture, Rectanglei region, ScaleMode mode, float ux, float uy, float uw, float uh) {
         drawTextureRaw(texture, region, Color.WHITE, mode, ux, uy, uw, uh);
     }
 
     @Override
-    public void drawTextureRaw(UITextureRegion texture, Rect2i region, Color color, ScaleMode mode, float ux, float uy, float uw, float uh) {
-        if (!state.cropRegion.overlaps(relativeToAbsolute(region))) {
+    public void drawTextureRaw(UITextureRegion texture, Rectanglei region, Color color, ScaleMode mode, float ux, float uy, float uw, float uh) {
+        if (!state.cropRegion.intersects(relativeToAbsolute(region))) {
             return;
         }
-        Rect2i absoluteRegion = relativeToAbsolute(region);
-        Rect2i cropRegion = absoluteRegion.intersect(state.cropRegion);
-        if (!cropRegion.isEmpty()) {
+        Rectanglei absoluteRegion = relativeToAbsolute(region);
+        Rectanglei cropRegion = absoluteRegion.intersection(state.cropRegion, new Rectanglei());
+        if (cropRegion.isValid()) {
             if (state.drawOnTop) {
                 drawOnTopOperations.add(new DrawTextureOperation(texture, color, mode, absoluteRegion, cropRegion, ux, uy, uw, uh, state.getAlpha()));
             } else {
@@ -619,25 +624,25 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile) {
+    public void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile) {
         drawTextureRawBordered(texture, region, border, tile, 0f, 0f, 1f, 1f);
     }
 
     @Override
-    public void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile, int ux, int uy, int uw, int uh) {
+    public void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile, int ux, int uy, int uw, int uh) {
         drawTextureRawBordered(texture, region, border, tile,
             (float) ux / texture.getWidth(), (float) uy / texture.getHeight(),
             (float) uw / texture.getWidth(), (float) uh / texture.getHeight());
     }
 
     @Override
-    public void drawTextureRawBordered(UITextureRegion texture, Rect2i region, Border border, boolean tile, float ux, float uy, float uw, float uh) {
-        if (!state.cropRegion.overlaps(relativeToAbsolute(region))) {
+    public void drawTextureRawBordered(UITextureRegion texture, Rectanglei region, Border border, boolean tile, float ux, float uy, float uw, float uh) {
+        if (!state.cropRegion.intersects(relativeToAbsolute(region))) {
             return;
         }
-        Rect2i absoluteRegion = relativeToAbsolute(region);
-        Rect2i cropRegion = absoluteRegion.intersect(state.cropRegion);
-        if (!cropRegion.isEmpty()) {
+        Rectanglei absoluteRegion = relativeToAbsolute(region);
+        Rectanglei cropRegion = absoluteRegion.intersection(state.cropRegion, new Rectanglei());
+        if (cropRegion.isValid()) {
             if (state.drawOnTop) {
                 drawOnTopOperations.add(new DrawBorderedTextureOperation(texture, absoluteRegion, border, tile, cropRegion, ux, uy, uw, uh, state.getAlpha()));
             } else {
@@ -657,13 +662,13 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void addInteractionRegion(InteractionListener listener, String tooltip, Rect2i region) {
+    public void addInteractionRegion(InteractionListener listener, String tooltip, Rectanglei region) {
         UIWidget tooltipLabelWidget = (tooltip == null || tooltip.isEmpty()) ? null : new UILabel(tooltip);
         addInteractionRegion(listener, tooltipLabelWidget, region);
     }
 
     @Override
-    public void addInteractionRegion(InteractionListener listener, Rect2i region) {
+    public void addInteractionRegion(InteractionListener listener, Rectanglei region) {
         addInteractionRegion(listener, (UIWidget) null, region);
     }
 
@@ -673,10 +678,10 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void addInteractionRegion(InteractionListener listener, UIWidget tooltip, Rect2i region) {
-        Vector2i offset = state.drawRegion.min();
-        Rect2i finalRegion = state.cropRegion.intersect(relativeToAbsolute(region));
-        if (!finalRegion.isEmpty()) {
+    public void addInteractionRegion(InteractionListener listener, UIWidget tooltip, Rectanglei region) {
+        Vector2i offset = new Vector2i(state.drawRegion.minX, state.drawRegion.minY);
+        Rectanglei finalRegion = state.cropRegion.intersection(relativeToAbsolute(region), new Rectanglei());
+        if (finalRegion.isValid()) {
             listener.setFocusManager(focusManager);
             if (state.drawOnTop) {
                 drawOnTopOperations.add(new DrawInteractionRegionOperation(finalRegion, offset, listener, state.element, tooltip));
@@ -700,12 +705,12 @@ public class CanvasImpl implements CanvasControl {
     }
 
     @Override
-    public void drawFilledRectangle(Rect2i region, Color color) {
+    public void drawFilledRectangle(Rectanglei region, Color color) {
         drawTextureRaw(whiteTexture, region, color, ScaleMode.STRETCH);
 
     }
 
-    protected Rect2i relativeToAbsolute(Rect2i region) {
+    protected Rectanglei relativeToAbsolute(Rectanglei region) {
         return Line.relativeToAbsolute(region, state.drawRegion);
     }
 
@@ -720,19 +725,19 @@ public class CanvasImpl implements CanvasControl {
         public String part = "";
         public String mode = "";
 
-        public Rect2i drawRegion;
-        public Rect2i cropRegion;
+        public Rectanglei drawRegion;
+        public Rectanglei cropRegion;
 
         private float alpha = 1.0f;
         private float baseAlpha = 1.0f;
 
         private boolean drawOnTop;
 
-        public CanvasState(CanvasState previous, Rect2i drawRegion) {
+        public CanvasState(CanvasState previous, Rectanglei drawRegion) {
             this(previous, drawRegion, (previous != null) ? previous.cropRegion : drawRegion);
         }
 
-        public CanvasState(CanvasState previous, Rect2i drawRegion, Rect2i cropRegion) {
+        public CanvasState(CanvasState previous, Rectanglei drawRegion, Rectanglei cropRegion) {
             if (previous != null) {
                 this.skin = previous.skin;
                 this.family = previous.family;
@@ -754,8 +759,8 @@ public class CanvasImpl implements CanvasControl {
             return skin.getStyleFor(family, element.getClass(), part, mode);
         }
 
-        public Rect2i getRelativeRegion() {
-            return Rect2i.createFromMinAndSize(0, 0, drawRegion.width(), drawRegion.height());
+        public Rectanglei getRelativeRegion() {
+            return RectUtility.createFromMinAndSize(0, 0, drawRegion.lengthX(), drawRegion.lengthY());
         }
     }
 
@@ -768,17 +773,17 @@ public class CanvasImpl implements CanvasControl {
         private CanvasState previousState;
         private boolean disposed;
 
-        public SubRegionImpl(Rect2i region, boolean crop) {
+        public SubRegionImpl(Rectanglei region, boolean crop) {
             previousState = state;
 
-            int left = TeraMath.addClampAtMax(region.minX(), state.drawRegion.minX());
-            int right = TeraMath.addClampAtMax(region.maxX(), state.drawRegion.minX());
-            int top = TeraMath.addClampAtMax(region.minY(), state.drawRegion.minY());
-            int bottom = TeraMath.addClampAtMax(region.maxY(), state.drawRegion.minY());
-            Rect2i subRegion = Rect2i.createFromMinAndMax(left, top, right, bottom);
+            int left = NUIMathUtil.addClampAtMax(region.minX, state.drawRegion.minX);
+            int right = NUIMathUtil.addClampAtMax(region.maxX, state.drawRegion.minX);
+            int top = NUIMathUtil.addClampAtMax(region.minY, state.drawRegion.minY);
+            int bottom = NUIMathUtil.addClampAtMax(region.maxY, state.drawRegion.minY);
+            Rectanglei subRegion = new Rectanglei(left, top, right, bottom);
             if (crop) {
-                Rect2i cropRegion = subRegion.intersect(state.cropRegion);
-                if (cropRegion.isEmpty()) {
+                Rectanglei cropRegion = subRegion.intersection(state.cropRegion, new Rectanglei());
+                if (!cropRegion.isValid()) {
                     state = new CanvasState(state, subRegion, cropRegion);
                 } else if (!cropRegion.equals(state.cropRegion)) {
                     state = new CanvasState(state, subRegion, cropRegion);
@@ -806,12 +811,12 @@ public class CanvasImpl implements CanvasControl {
 
     protected static class InteractionRegion {
         public InteractionListener listener;
-        public Rect2i region;
+        public Rectanglei region;
         public Vector2i offset;
         public UIWidget element;
         public UIWidget tooltipOverride;
 
-        public InteractionRegion(Rect2i region, Vector2i offset, InteractionListener listener, UIWidget element, UIWidget tooltipOverride) {
+        public InteractionRegion(Rectanglei region, Vector2i offset, InteractionListener listener, UIWidget element, UIWidget tooltipOverride) {
             this.listener = listener;
             this.region = region;
             this.offset = offset;
@@ -850,16 +855,16 @@ public class CanvasImpl implements CanvasControl {
         private Color color;
         private ScaleMode mode;
         private UITextureRegion texture;
-        private Rect2i absoluteRegion;
-        private Rect2i cropRegion;
+        private Rectanglei absoluteRegion;
+        private Rectanglei cropRegion;
         private float ux;
         private float uy;
         private float uw;
         private float uh;
         private float alpha;
 
-        public DrawTextureOperation(UITextureRegion texture, Color color, ScaleMode mode, Rect2i absoluteRegion,
-                                     Rect2i cropRegion, float ux, float uy, float uw, float uh, float alpha) {
+        public DrawTextureOperation(UITextureRegion texture, Color color, ScaleMode mode, Rectanglei absoluteRegion,
+                                     Rectanglei cropRegion, float ux, float uy, float uw, float uh, float alpha) {
             this.color = color;
             this.mode = mode;
             this.texture = texture;
@@ -885,16 +890,16 @@ public class CanvasImpl implements CanvasControl {
         private UITextureRegion texture;
         private Border border;
         private boolean tile;
-        private Rect2i absoluteRegion;
-        private Rect2i cropRegion;
+        private Rectanglei absoluteRegion;
+        private Rectanglei cropRegion;
         private float ux;
         private float uy;
         private float uw;
         private float uh;
         private float alpha;
 
-        public DrawBorderedTextureOperation(UITextureRegion texture, Rect2i absoluteRegion, Border border, boolean tile,
-                                             Rect2i cropRegion, float ux, float uy, float uw, float uh, float alpha) {
+        public DrawBorderedTextureOperation(UITextureRegion texture, Rectanglei absoluteRegion, Border border, boolean tile,
+                                             Rectanglei cropRegion, float ux, float uy, float uw, float uh, float alpha) {
             this.texture = texture;
             this.tile = tile;
             this.absoluteRegion = absoluteRegion;
@@ -940,16 +945,16 @@ public class CanvasImpl implements CanvasControl {
     protected final class DrawTextOperation implements DrawOperation {
         private final String text;
         private final Font font;
-        private final Rect2i absoluteRegion;
+        private final Rectanglei absoluteRegion;
         private final HorizontalAlign hAlign;
         private final VerticalAlign vAlign;
-        private final Rect2i cropRegion;
+        private final Rectanglei cropRegion;
         private final Color shadowColor;
         private final Color color;
         private final float alpha;
         private final boolean underline;
 
-        public DrawTextOperation(String text, Font font, HorizontalAlign hAlign, VerticalAlign vAlign, Rect2i absoluteRegion, Rect2i cropRegion,
+        public DrawTextOperation(String text, Font font, HorizontalAlign hAlign, VerticalAlign vAlign, Rectanglei absoluteRegion, Rectanglei cropRegion,
                                   Color color, Color shadowColor, float alpha, boolean underline) {
             this.text = text;
             this.font = font;
@@ -974,12 +979,12 @@ public class CanvasImpl implements CanvasControl {
     protected final class DrawInteractionRegionOperation implements DrawOperation {
 
         private final Vector2i offset;
-        private final Rect2i region;
+        private final Rectanglei region;
         private final InteractionListener listener;
         private final UIWidget currentElement;
         private final UIWidget tooltipOverride;
 
-        public DrawInteractionRegionOperation(Rect2i region, Vector2i offset, InteractionListener listener, UIWidget currentElement, UIWidget tooltipOverride) {
+        public DrawInteractionRegionOperation(Rectanglei region, Vector2i offset, InteractionListener listener, UIWidget currentElement, UIWidget tooltipOverride) {
             this.region = region;
             this.listener = listener;
             this.offset = offset;

@@ -19,13 +19,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreLayout;
 import org.terasology.nui.HorizontalAlign;
 import org.terasology.nui.UIWidget;
 import org.terasology.nui.VerticalAlign;
+import org.terasology.nui.util.RectUtility;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,7 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
     private Map<String, WidgetInfo> contentLookup = Maps.newHashMap();
     private List<WidgetInfo> contents = Lists.newArrayList();
 
-    private Map<WidgetInfo, Rect2i> cachedRegions = Maps.newHashMap();
+    private Map<WidgetInfo, Rectanglei> cachedRegions = Maps.newHashMap();
 
     private String loopDetectionId = "";
 
@@ -81,14 +82,14 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
     @Override
     public void onDraw(Canvas canvas) {
         for (WidgetInfo element : contents) {
-            Rect2i drawRegion = getRegion(element, canvas);
+            Rectanglei drawRegion = getRegion(element, canvas);
             canvas.drawWidget(element.widget, drawRegion);
         }
         cachedRegions.clear();
     }
 
-    private Rect2i getRegion(WidgetInfo element, Canvas canvas) {
-        Rect2i cachedRegion = cachedRegions.get(element);
+    private Rectanglei getRegion(WidgetInfo element, Canvas canvas) {
+        Rectanglei cachedRegion = cachedRegions.get(element);
         if (cachedRegion != null) {
             return cachedRegion;
         }
@@ -98,19 +99,19 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
         int center = canvas.size().x / 2;
         if (element.layoutHint.getPositionCenterHorizontal() != null) {
             HorizontalInfo info = element.layoutHint.getPositionCenterHorizontal();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             HorizontalAlign align = (info.getTarget() != null) ? info.getTarget() : HorizontalAlign.CENTER;
             center = align.getStart(targetRegion) + info.getOffset();
         }
         if (element.layoutHint.getPositionLeft() != null) {
             HorizontalInfo info = element.layoutHint.getPositionLeft();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             HorizontalAlign align = (info.getTarget() != null) ? info.getTarget() : HorizontalAlign.LEFT;
             left = align.getStart(targetRegion) + info.getOffset();
         }
         if (element.layoutHint.getPositionRight() != null) {
             HorizontalInfo info = element.layoutHint.getPositionRight();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             HorizontalAlign align = (info.getTarget() != null) ? info.getTarget() : HorizontalAlign.RIGHT;
             right = align.getStart(targetRegion) - info.getOffset();
         }
@@ -120,19 +121,19 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
         int vcenter = canvas.size().y / 2;
         if (element.layoutHint.getPositionCenterVertical() != null) {
             VerticalInfo info = element.layoutHint.getPositionCenterVertical();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             VerticalAlign align = (info.getTarget() != null) ? info.getTarget() : VerticalAlign.MIDDLE;
             vcenter = align.getStart(targetRegion) + info.getOffset();
         }
         if (element.layoutHint.getPositionTop() != null) {
             VerticalInfo info = element.layoutHint.getPositionTop();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             VerticalAlign align = (info.getTarget() != null) ? info.getTarget() : VerticalAlign.TOP;
             top = align.getStart(targetRegion) + info.getOffset();
         }
         if (element.layoutHint.getPositionBottom() != null) {
             VerticalInfo info = element.layoutHint.getPositionBottom();
-            Rect2i targetRegion = getTargetRegion(info.getWidget(), canvas);
+            Rectanglei targetRegion = getTargetRegion(info.getWidget(), canvas);
             VerticalAlign align = (info.getTarget() != null) ? info.getTarget() : VerticalAlign.BOTTOM;
             bottom = align.getStart(targetRegion) - info.getOffset();
         }
@@ -174,12 +175,12 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
                 }
             }
         }
-        Rect2i region = Rect2i.createFromMinAndSize(left, top, width, height);
+        Rectanglei region = RectUtility.createFromMinAndSize(left, top, width, height);
         cachedRegions.put(element, region);
         return region;
     }
 
-    private Rect2i getTargetRegion(String id, Canvas canvas) {
+    private Rectanglei getTargetRegion(String id, Canvas canvas) {
         if (id != null && !id.isEmpty()) {
             if (loopDetectionId.equals(id)) {
                 logger.warn("Infinite loop detected resolving layout of element {}", loopDetectionId);
@@ -191,7 +192,7 @@ public class RelativeLayout extends CoreLayout<RelativeLayoutHint> {
             WidgetInfo target = contentLookup.get(id);
             if (target != null) {
                 try {
-                    Rect2i region = getRegion(target, canvas);
+                    Rectanglei region = getRegion(target, canvas);
                     loopDetectionId = "";
                     return region;
                 } catch (StackOverflowError e) {

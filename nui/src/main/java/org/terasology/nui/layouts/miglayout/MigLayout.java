@@ -24,14 +24,15 @@ import net.miginfocom.layout.ConstraintParser;
 import net.miginfocom.layout.ContainerWrapper;
 import net.miginfocom.layout.Grid;
 import net.miginfocom.layout.LC;
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.joml.Vector2i;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.Color;
 import org.terasology.nui.CoreLayout;
 import org.terasology.nui.LayoutConfig;
 import org.terasology.nui.LayoutHint;
 import org.terasology.nui.UIWidget;
+import org.terasology.nui.util.RectUtility;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -65,7 +66,7 @@ public class MigLayout extends CoreLayout<MigLayout.CCHint> implements Container
     private Grid grid;
     private boolean dirty;
     private MigComponent delegate = new MigComponent(null, null);
-    private List<Rect2i> debugRects = Lists.newArrayList();
+    private List<Rectanglei> debugRects = Lists.newArrayList();
     @LayoutConfig
     private boolean debug;
 
@@ -124,18 +125,18 @@ public class MigLayout extends CoreLayout<MigLayout.CCHint> implements Container
 
         for (ComponentWrapper wrapper : wrappers.values()) {
             UIWidget component = (UIWidget) wrapper.getComponent();
-            Rect2i region = Rect2i.createFromMinAndSize(wrapper.getX(), wrapper.getY(), wrapper.getWidth(), wrapper.getHeight());
+            Rectanglei region = RectUtility.createFromMinAndSize(wrapper.getX(), wrapper.getY(), wrapper.getWidth(), wrapper.getHeight());
             canvas.drawWidget(component, region);
         }
 
         if (debug) {
             grid.paintDebug();
         }
-        for (Rect2i region : debugRects) {
-            canvas.drawLine(region.minX(), region.minY(), region.maxX(), region.minY(), Color.WHITE);
-            canvas.drawLine(region.maxX(), region.minY(), region.maxX(), region.maxY(), Color.WHITE);
-            canvas.drawLine(region.maxX(), region.maxY(), region.minX(), region.maxY(), Color.WHITE);
-            canvas.drawLine(region.minX(), region.maxY(), region.minX(), region.minY(), Color.WHITE);
+        for (Rectanglei region : debugRects) {
+            canvas.drawLine(region.minX, region.minY, region.maxX, region.minY, Color.WHITE);
+            canvas.drawLine(region.maxX, region.minY, region.maxX, region.maxY, Color.WHITE);
+            canvas.drawLine(region.maxX, region.maxY, region.minX, region.maxY, Color.WHITE);
+            canvas.drawLine(region.minX, region.maxY, region.minX, region.minY, Color.WHITE);
         }
     }
 
@@ -185,7 +186,7 @@ public class MigLayout extends CoreLayout<MigLayout.CCHint> implements Container
 
     @Override
     public Vector2i getMaxContentSize(Canvas canvas) {
-        return getPreferredContentSize(canvas, Vector2i.zero());
+        return getPreferredContentSize(canvas, new Vector2i());
     }
 
     private ComponentWrapper getWrapper(UIWidget comp) {
@@ -253,7 +254,7 @@ public class MigLayout extends CoreLayout<MigLayout.CCHint> implements Container
 
     @Override
     public void paintDebugCell(int x, int y, int width, int height) {
-        debugRects.add(Rect2i.createFromMinAndSize(x, y, width, height));
+        debugRects.add(RectUtility.createFromMinAndSize(x, y, width, height));
     }
 
     @Override

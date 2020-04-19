@@ -15,9 +15,9 @@
  */
 package org.terasology.nui.widgets;
 
-import org.terasology.math.geom.Rect2i;
-import org.terasology.math.TeraMath;
-import org.terasology.math.geom.Vector2i;
+import org.joml.Rectanglei;
+import org.terasology.nui.util.NUIMathUtil;
+import org.joml.Vector2i;
 import org.terasology.nui.UITextureRegion;
 import org.terasology.nui.Canvas;
 import org.terasology.nui.CoreWidget;
@@ -26,6 +26,7 @@ import org.terasology.nui.ScaleMode;
 import org.terasology.nui.databinding.Binding;
 import org.terasology.nui.databinding.DefaultBinding;
 import org.terasology.nui.skin.UIStyle;
+import org.terasology.nui.util.RectUtility;
 
 /**
  * A value bar that uses Icons
@@ -58,7 +59,7 @@ public class UIIconBar extends CoreWidget {
         if (icon != null && getMaxValue() > 0) {
             Vector2i iconSize = getIconSize(canvas);
             float ratio = maxIcons * getValue() / getMaxValue();
-            int fullIcons = TeraMath.floorToInt(ratio);
+            int fullIcons = NUIMathUtil.floorToInt(ratio);
             boolean halfIcon = false;
             if (ratio - fullIcons >= 0.5f) {
                 fullIcons++;
@@ -67,7 +68,7 @@ public class UIIconBar extends CoreWidget {
             }
             Vector2i offset = new Vector2i();
             for (int i = 0; i < maxIcons; ++i) {
-                Rect2i iconRegion = Rect2i.createFromMinAndSize(offset, iconSize);
+                Rectanglei iconRegion = RectUtility.createFromMinAndSize(offset, iconSize);
                 canvas.drawBackground(iconRegion);
                 if (ratio - i >= 0.5f) {
                     canvas.drawTexture(icon, iconRegion);
@@ -78,11 +79,11 @@ public class UIIconBar extends CoreWidget {
                             halfSize.x /= 2;
                             halfSize.y /= 2;
                             canvas.drawTexture(icon,
-                                    Rect2i.createFromMinAndSize(new Vector2i(offset.x + halfSize.x / 2, offset.y + halfSize.y / 2), halfSize));
+                                    RectUtility.createFromMinAndSize(new Vector2i(offset.x + halfSize.x / 2, offset.y + halfSize.y / 2), halfSize));
                             break;
                         case SPLIT:
                             canvas.drawTextureRaw(icon,
-                                    Rect2i.createFromMinAndSize(offset, new Vector2i(iconSize.x / 2, iconSize.y)),
+                                    RectUtility.createFromMinAndSize(offset, new Vector2i(iconSize.x / 2, iconSize.y)),
                                     ScaleMode.STRETCH, 0f, 0f, (float) (iconSize.x / 2) / iconSize.x, 1.0f);
                             break;
                         default:
@@ -109,7 +110,7 @@ public class UIIconBar extends CoreWidget {
             int columns = Math.min(maxIcons, maxHorizontalIcons);
             return new Vector2i(columns * iconSize.x + (columns - 1) * spacing, rows * iconSize.y + (rows - 1) * spacing);
         } else {
-            return Vector2i.zero();
+            return new Vector2i();
         }
 
     }
