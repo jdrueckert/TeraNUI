@@ -25,6 +25,14 @@ public final class RectUtility {
         return new Rectanglef(min, min.add(size, new Vector2f()));
     }
 
+    public static Rectanglef createFromCenterAndSize(Vector2f center, Vector2f size) {
+        return createFromCenterAndSize(center.x, center.y, size.x, size.y);
+    }
+
+    public static Rectanglef createFromCenterAndSize(float centerX, float centerY, float width, float height) {
+        return createFromMinAndSize(centerX - width * 0.5f, centerY - height * 0.5f, width, height);
+    }
+
     public static boolean isEmpty(Rectanglei rect) {
         return rect.lengthX() == 0 || rect.lengthY() == 0;
     }
@@ -35,5 +43,29 @@ public final class RectUtility {
 
     public static boolean contains(Rectanglei rect, Vector2i point) {
         return point.x >= rect.minX && point.x < rect.maxX && point.y >= rect.minY && point.y < rect.maxY;
+    }
+
+    public static Rectanglei expand(Rectanglei rect, Vector2i amount) {
+        return expand(rect, amount.x, amount.y);
+    }
+
+    public static Rectanglei expand(Rectanglei rect, int dx, int dy) {
+        int minX = rect.minX - dx;
+        int minY = rect.minY - dy;
+        int maxX = rect.maxX + dx;
+        int maxY = rect.maxY + dy;
+        return new Rectanglei(minX, minY, maxX, maxY);
+    }
+
+    public static Rectanglef expand(Rectanglef rect, Vector2f amount) {
+        return expand(rect, amount.x, amount.y);
+    }
+
+    public static Rectanglef expand(Rectanglef rect, float dx, float dy) {
+        float minX = rect.minX - dx;
+        float minY = rect.minY - dy;
+        float maxX = rect.maxX + dx;
+        float maxY = rect.maxY + dy;
+        return new Rectanglef(minX, minY, maxX, maxY);
     }
 }
