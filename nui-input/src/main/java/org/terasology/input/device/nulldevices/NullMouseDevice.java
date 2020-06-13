@@ -27,7 +27,7 @@ import java.util.Queue;
  */
 public class NullMouseDevice implements MouseDevice {
     @Override
-    public Vector2i getPosition() {
+    public Vector2i getMousePosition() {
         return new Vector2i();
     }
 

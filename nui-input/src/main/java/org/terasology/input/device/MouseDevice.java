@@ -31,7 +31,7 @@ public interface MouseDevice extends InputDevice {
     /**
      * @return The current position of the mouse in screen space
      */
-    Vector2i getPosition();
+    Vector2i getMousePosition();
 
     /**
      * @return The change in mouse position over the last update

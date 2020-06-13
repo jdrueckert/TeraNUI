@@ -39,7 +39,7 @@ public class LibGDXMouseDevice implements MouseDevice {
      * @return The current position of the mouse in screen space
      */
     @Override
-    public Vector2i getPosition() {
+    public Vector2i getMousePosition() {
         return GDXInputUtil.GDXToNUIMousePosition(Gdx.input.getX(), Gdx.input.getY());
     }
 
