@@ -3,15 +3,14 @@ plugins {
     id 'maven-publish'
 }
 
-sourceSets {
-    main {
-        java
-    }
-}
+group = "org.terasology.nui"
 
 java {
     withSourcesJar()
     withJavadocJar()
+
+    sourceCompatibility(JavaVersion.VERSION_1_8)
+    targetCompatibility(JavaVersion.VERSION_1_8)
 }
 
 repositories {
